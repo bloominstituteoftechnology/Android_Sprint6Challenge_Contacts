@@ -55,6 +55,7 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.View
                 " " +
                 users.get(position).getFirst() +
                 users.get(position).getLast());
+        holder.userPhoneNumber.setText(users.get(position).getPhone());
         Bitmap bitmapFromCache = (Bitmap)cache.getImageFromCache(
                 users.get(position)
                         .getPictureThumbnail()
