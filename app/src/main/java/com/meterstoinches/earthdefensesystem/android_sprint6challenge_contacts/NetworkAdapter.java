@@ -1,5 +1,8 @@
 package com.meterstoinches.earthdefensesystem.android_sprint6challenge_contacts;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +67,41 @@ public class NetworkAdapter {
                 }
             }
         }).start();
+    }
 
+    public static Bitmap httpImageRequest(String urlString) {
+        Bitmap resultImage = null;
+        InputStream stream = null;
+        HttpURLConnection connection = null;
 
+        URL url = null;
+        try {
+            url = new URL(urlString);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                stream = connection.getInputStream();
+                if (stream != null) {
+                    resultImage = BitmapFactory.decodeStream(stream);
+                }
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return resultImage;
     }
 }

@@ -1,5 +1,7 @@
 package com.meterstoinches.earthdefensesystem.android_sprint6challenge_contacts;
 
+import android.graphics.Bitmap;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,5 +49,9 @@ public class ContactsApiDao {
             }
         };
         NetworkAdapter.httpGetRequest("https://randomuser.me/api/?format=json&inc=name,email,phone,picture&results=1000", callback);
+    }
+
+    public static Bitmap getImage(String url){
+        return NetworkAdapter.httpImageRequest(url);
     }
 }
