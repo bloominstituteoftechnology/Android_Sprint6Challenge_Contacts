@@ -1,5 +1,8 @@
 package com.joshuahalvorson.android_sprint6challenge_contacts;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,5 +68,39 @@ public class NetworkAdapter {
             }
         }).start();
 
+    }
+
+    public static Bitmap httpImageRequest(String urlString){
+        Bitmap image = null;
+        InputStream stream = null;
+        HttpURLConnection connection = null;
+        try{
+            URL url = new URL(urlString);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+            int responseCode = connection.getResponseCode();
+            if(responseCode == HttpURLConnection.HTTP_OK){
+                stream = connection.getInputStream();
+                if(stream != null){
+                    image = BitmapFactory.decodeStream(stream);
+                }
+            }else{
+                throw new IOException("HTTP Error code: " + responseCode);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            if(stream != null){
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(connection != null){
+                connection.disconnect();
+            }
+        }
+        return image;
     }
 }

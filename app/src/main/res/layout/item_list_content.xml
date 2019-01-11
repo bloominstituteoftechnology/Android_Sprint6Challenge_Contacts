@@ -6,10 +6,11 @@
         android:id="@+id/parent_view"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content">
+
         <ImageView
             android:id="@+id/user_image_thumbnail"
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
 
         <TextView
             android:id="@+id/user_name"
