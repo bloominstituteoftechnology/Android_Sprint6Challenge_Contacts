@@ -9,15 +9,15 @@
 
         <ImageView
             android:id="@+id/user_image_thumbnail"
-            android:layout_width="40dp"
-            android:layout_height="40dp" />
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
 
         <TextView
             android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="example user"
-            android:textSize="25dp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/user_phone"
@@ -26,6 +26,6 @@
             android:layout_marginStart="15dp"
             android:text="12346"
             android:textAlignment="viewStart"
-            android:textSize="25dp" />
+            android:textSize="15sp" />
     </TableRow>
 </TableLayout>

@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +15,12 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.ViewHolder>{
     private final List<User> users;
     Bitmap bitmap = null;
+    final AtomicBoolean canceled = new AtomicBoolean(false);
 
     UsersListAdapter(List<User> items) {
         users = items;
@@ -37,14 +41,23 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.View
                 users.get(position).getFirst() +
                 users.get(position).getLast());
         holder.userPhoneNumber.setText(users.get(position).getPhone());
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                bitmap = UsersDbDao.getImage(users.get(position).getPictureThumbnail());
-            }
-        }).start();
-        
+        canceled.set(false);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    bitmap = UsersDbDao.getImage(users.get(position).getPictureThumbnail(), canceled);
+                }
+            }).start();
+
+        Log.i("onBindViewHolder", position + " bound");
         holder.userImage.setImageBitmap(bitmap);
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        canceled.set(true);
+        Log.i("ViewDetachedFromWindow", "canceled");
     }
 
     @Override

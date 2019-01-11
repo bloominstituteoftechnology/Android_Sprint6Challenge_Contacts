@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UsersDbDao {
     public interface ObjectCallback<T> {
@@ -41,7 +42,7 @@ public class UsersDbDao {
         NetworkAdapter.httpGetRequest(URL, callback);
     }
 
-    public static Bitmap getImage(String url){
-        return NetworkAdapter.httpImageRequest(url);
+    public static Bitmap getImage(String url, final AtomicBoolean atomicBoolean){
+        return NetworkAdapter.httpImageRequest(url, atomicBoolean);
     }
 }

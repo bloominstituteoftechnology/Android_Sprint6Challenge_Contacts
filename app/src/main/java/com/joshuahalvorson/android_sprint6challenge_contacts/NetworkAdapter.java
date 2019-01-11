@@ -2,6 +2,7 @@ package com.joshuahalvorson.android_sprint6challenge_contacts;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NetworkAdapter {
     public interface NetworkCallback {
@@ -70,15 +72,27 @@ public class NetworkAdapter {
 
     }
 
-    public static Bitmap httpImageRequest(String urlString){
+    public static Bitmap httpImageRequest(String urlString, final AtomicBoolean canceled){
+        if(canceled.get()){
+            Log.i("ImageRequestCanceled", urlString);
+            return null;
+        }
         Bitmap image = null;
         InputStream stream = null;
         HttpURLConnection connection = null;
         try{
             URL url = new URL(urlString);
             connection = (HttpURLConnection) url.openConnection();
+            if(canceled.get()){
+                Log.i("ImageRequestCanceled", urlString);
+                throw new IOException();
+            }
             connection.connect();
             int responseCode = connection.getResponseCode();
+            if(canceled.get()){
+                Log.i("ImageRequestCanceled", urlString);
+                throw new IOException();
+            }
             if(responseCode == HttpURLConnection.HTTP_OK){
                 stream = connection.getInputStream();
                 if(stream != null){
