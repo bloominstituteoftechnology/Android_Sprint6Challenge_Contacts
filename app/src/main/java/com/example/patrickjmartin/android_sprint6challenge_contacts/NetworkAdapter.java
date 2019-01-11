@@ -23,13 +23,6 @@ public class NetworkAdapter {
         new Thread(new Runnable() {
             @Override
             public void run() {
-
-                if(canceled.get()) {
-                    Log.i("GetRequestCanceled", urlString);
-                    return;
-                }
-
-
                 String result = "";
                 boolean success = false;
                 HttpURLConnection connection = null;
@@ -84,11 +77,8 @@ public class NetworkAdapter {
                             e.printStackTrace();
                         }
                     }
-
                     callback.returnResult(success, result);
                 }
-//                return result;
-
             }
         }).start();
 

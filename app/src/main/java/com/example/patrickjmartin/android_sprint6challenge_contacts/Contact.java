@@ -3,9 +3,21 @@ package com.example.patrickjmartin.android_sprint6challenge_contacts;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Contact {
+import java.io.Serializable;
+
+public class Contact implements Serializable {
 
     String titleName, firstName, lastName, email, phoneNumber, pictureLarge, pictureThumb;
+
+    public Contact(String titleName, String firstName, String lastName, String email, String phoneNumber, String pictureLarge, String pictureThumb) {
+        this.titleName = titleName;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.pictureLarge = pictureLarge;
+        this.pictureThumb = pictureThumb;
+    }
 
     public Contact (JSONObject json) {
 
