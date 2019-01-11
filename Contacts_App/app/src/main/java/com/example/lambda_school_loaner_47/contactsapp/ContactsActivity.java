@@ -1,5 +1,6 @@
 package com.example.lambda_school_loaner_47.contactsapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,15 +16,18 @@ public class ContactsActivity extends AppCompatActivity {
     LinearLayoutManager manager;
     ArrayList<Contacts> list;
     ContactsAdapter adapter;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
+        context = this;
         view = findViewById(R.id.recycleView);
         list = new ArrayList<>();
-        manager = new LinearLayoutManager(this);
+
+
 
         findViewById(R.id.btnShowContacts).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,6 +41,7 @@ public class ContactsActivity extends AppCompatActivity {
                             public void run() {
                                 adapter = new ContactsAdapter(list);
                                 view.setHasFixedSize(true);
+                                manager = new LinearLayoutManager(context);
                                 view.setLayoutManager(manager);
                                 view.setAdapter(adapter);
                             }

@@ -35,7 +35,8 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
     @Override
     public void onBindViewHolder(@NonNull ContactsAdapter.MyViewHolder myViewHolder, int i) {
         //todo replace holder
-        myViewHolder.fullName.setText("PlaceHolder");
+        Contacts contact = list.get(i);
+        myViewHolder.fullName.setText(contact.getFirstName());
         myViewHolder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,7 +48,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
     @Override
     public int getItemCount() {
-        return 0;
+        return list.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
