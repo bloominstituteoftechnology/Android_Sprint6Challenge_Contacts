@@ -1,5 +1,7 @@
 package com.example.jacob.android_sprint6challenge_contacts;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -12,6 +14,9 @@ import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NetworkAdapter {
+    public static final int TIMEOUT = 3000;
+
+
     public interface NetworkCallback {
         void returnResult(Boolean success, String result);
     }
@@ -85,4 +90,98 @@ public class NetworkAdapter {
             }
         }).start();
     }
+
+    static Bitmap httpImageRequest(String urlString) {
+        Bitmap resultImage = null;
+        InputStream stream = null;
+        HttpURLConnection connection = null;
+
+        URL url;
+        try {
+            url = new URL(urlString);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(TIMEOUT);
+            connection.setConnectTimeout(TIMEOUT);
+            connection.connect();
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                stream = connection.getInputStream();
+                if (stream != null) {
+                    resultImage = BitmapFactory.decodeStream(stream);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return resultImage;
+    }
+
+    static Bitmap httpImageRequest(String urlString, final AtomicBoolean canceled, final NetworkCallback callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap resultImage = null;
+                InputStream stream = null;
+                HttpURLConnection connection = null;
+                URL url;
+                if(canceled.get()) {
+                    Log.i("GetRequestCanceled", urlString);
+                    return;
+                }
+
+                try {
+                    url = new URL(urlString);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setReadTimeout(TIMEOUT);
+                    connection.setConnectTimeout(TIMEOUT);
+                    connection.connect();
+                    int responseCode = connection.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                        if(canceled.get()) {
+                            Log.i("GetRequestCanceled", urlString);
+                            connection.disconnect();
+                            return;
+                        }
+
+                        stream = connection.getInputStream();
+                        if (stream != null) {
+                            resultImage = BitmapFactory.decodeStream(stream);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (stream != null) {
+                        try {
+                            stream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+                }
+                if(canceled.get()) {
+                    Log.i("GetRequestCanceled", urlString);
+                    return null;
+                }
+                return resultImage;
+            }
+        }
+
+    }
+
 }

@@ -2,6 +2,9 @@ package com.example.jacob.android_sprint6challenge_contacts;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -9,16 +12,16 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jacob.android_sprint6challenge_contacts.dummy.DummyContent;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -38,6 +41,7 @@ public class ContactListActivity extends AppCompatActivity {
     private boolean mTwoPane;
     private static ArrayList<Contact> contactList;
     static Context context;
+    SimpleItemRecyclerViewAdapter listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,11 +50,11 @@ public class ContactListActivity extends AppCompatActivity {
 
         context = this;
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,11 +78,12 @@ public class ContactListActivity extends AppCompatActivity {
         AtomicBoolean canceled = new AtomicBoolean(false);
         ContactsDao.getContacts(canceled, new ContactsDao.ObjectCallback<ArrayList<Contact>>() {
             @Override
-            public void returnContacts(ArrayList<Contact> contacts) {
+            public void returnObjects(ArrayList<Contact> contacts) {
                 contactList = contacts;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+//                        listAdapter.notifyDataSetChanged();
                         setupRecyclerView((RecyclerView) recyclerView);
                     }
                 });
@@ -89,7 +94,8 @@ public class ContactListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, contactList, mTwoPane));
+        listAdapter = new SimpleItemRecyclerViewAdapter(this, contactList, mTwoPane);
+        recyclerView.setAdapter(listAdapter);
     }
 
     public static class SimpleItemRecyclerViewAdapter
@@ -138,9 +144,22 @@ public class ContactListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-//            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).name);
+            String imageUrl = mValues.get(position).imageUrl;
+            File file = getFileFromCache(PublicFunctions.getSearchText(imageUrl));
+            Bitmap bitmap = null;
+            try {
+                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                holder.mImageView.setImageBitmap(bitmap);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                holder.mImageView.setImageResource(R.color.colorPrimaryDark);
+                new getContactImageTask().execute(imageUrl,String.valueOf(position));
+            } catch (NullPointerException e) {
+                holder.mImageView.setImageResource(R.color.colorPrimaryDark);
+            }
 
+            holder.mNameView.setText(mValues.get(position).name);
+            holder.mIdView.setText(String.valueOf(mValues.get(position).id));
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
         }
@@ -156,13 +175,48 @@ public class ContactListActivity extends AppCompatActivity {
 
         class ViewHolder extends RecyclerView.ViewHolder {
             final TextView mIdView;
-            final TextView mContentView;
+            final TextView mNameView;
+            final ImageView mImageView;
 
             ViewHolder(View view) {
                 super(view);
-                mIdView = (TextView) view.findViewById(R.id.id_text);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                mIdView = view.findViewById(R.id.id_text);
+                mNameView = view.findViewById(R.id.name);
+                mImageView = view.findViewById(R.id.image);
             }
         }
     }
+
+    public static class getContactImageTask extends AsyncTask<String, Integer, Integer> {
+        @Override
+        protected Integer doInBackground(String... strings) {
+            ContactsDao.getImageFile(strings[0], context);
+            return Integer.parseInt(strings[1]);
+        }
+
+        @Override
+        protected void onPostExecute(Integer index) {
+            super.onPostExecute(index);
+            listAdapter.notifyItemChanged(index);
+        }
+    }
+
+    private static File getFileFromCache(String searchText) {
+        File file = null;
+        File[] items = context.getCacheDir().listFiles();
+        for (File item : items) {
+            if (item.getName().contains(searchText)) {
+                file = item;
+                break;
+            }
+        }
+        return file;
+    }
+
+
+
+
+
 }
+
+//TODO Remove atomicBoolean from network adapter.
