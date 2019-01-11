@@ -48,4 +48,12 @@ class ContactsDao {
         }
         return list;
     }
+
+    public void saveBitmapToCache(){
+        // code for bitmap
+    }
+
+    public void getBitmapFromCache(){
+        //code for bitmip
+    }
 }
