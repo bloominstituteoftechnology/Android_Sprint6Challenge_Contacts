@@ -38,7 +38,7 @@ public class ContactsDao {
 
                     for (int i = 0; i < resultsArray.length(); ++i) {
                         try {
-                            contacts.add(new Contact(resultsArray.getJSONObject(i)));
+                            contacts.add(new Contact(resultsArray.getJSONObject(i)), contacts.size());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -53,9 +53,6 @@ public class ContactsDao {
             Log.i("GetRequestCanceled", "First");
             return;
         }
-        NetworkAdapter.httpGetRequest("https://swapi.co/api/planets", canceled, callback);
-
-
+        NetworkAdapter.httpGetRequest("https://randomuser.me/api/?format=json&inc=name,email,phone,picture&results=1000", canceled, callback);
     }
-
 }

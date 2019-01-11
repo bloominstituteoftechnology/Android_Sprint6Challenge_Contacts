@@ -1,5 +1,6 @@
 package com.example.jacob.android_sprint6challenge_contacts;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Contact {
@@ -14,7 +15,39 @@ public class Contact {
         this.imageUrl = imageUrl;
     }
 
-    public Contact(JSONObject json) {
+    public Contact(JSONObject json, int inputId) {
+        this.id = inputId;
+        try {
+            JSONObject names = json.getJSONObject("name");
+            String fullName = "";
 
+            fullName += names.getString("title") + ", ";
+            fullName += names.getString("first") + ", ";
+            fullName += names.getString("last") + ", ";
+
+            this.name = fullName;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            this.phone = json.getString("phone");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            this.email = json.getString("email");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject imageUrls = null;
+        try {
+            imageUrls = json.getJSONObject("picture");
+            this.imageUrl =  imageUrls.getString("thumbnail");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
