@@ -7,9 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -68,13 +66,13 @@ public class NetworkAdapter {
         }).start();
     }
 
-    public static Bitmap httpImageRequest(Contact contact, String where, ContactImageCache imageCache,
+    public static Bitmap httpImageRequest(Contact contact, Boolean isSmall, ContactImageCache imageCache,
                                           final AtomicBoolean cancelled) {
 
         String urlString = null;
         String cacheKey = null;
 
-        if (where.equals("recycler")) {
+        if (isSmall) {
            urlString = contact.getPictureThumb();
            cacheKey = contact.getTitleName() + contact.getFirstName() + contact.getLastName() + "Large";
         } else {
@@ -121,7 +119,7 @@ public class NetworkAdapter {
             }
         }
 
-        imageCache.setObject(cacheKey, image);
+//        imageCache.setObject(cacheKey, image);
         return image;
     }
 

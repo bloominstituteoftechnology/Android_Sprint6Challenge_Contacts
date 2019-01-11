@@ -97,6 +97,14 @@ public class Contact implements Serializable {
         return pictureThumb;
     }
 
+    public String getCacheKey(boolean isSmall) {
+        if (isSmall) {
+            return (titleName + firstName + lastName + "Thumb");
+        } else {
+            return (titleName + firstName + lastName + "Large");
+        }
+    }
+
     public static String toCamelCase(String initString) {
         String newString = "";
         if (initString == null || initString == "" ) {
