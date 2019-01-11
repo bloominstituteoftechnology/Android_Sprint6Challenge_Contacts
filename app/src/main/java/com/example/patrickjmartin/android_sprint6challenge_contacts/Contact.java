@@ -25,11 +25,10 @@ public class Contact implements Serializable {
 
         try {
             JSONObject name = json.getJSONObject("name");
-            String fullName = "";
 
-            titleName = name.getString("title") + ", ";
-            firstName = name.getString("first") + ", ";
-            lastName = name.getString("last") + ", ";
+            titleName = name.getString("title");
+            firstName = name.getString("first");
+            lastName = name.getString("last");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -78,6 +77,9 @@ public class Contact implements Serializable {
     }
 
     public String getFullName() {
+        if (fullName == null) {
+            this.fullName = toCamelCase(titleName + " " + firstName + " " + lastName);
+        }
         return fullName;
     }
 

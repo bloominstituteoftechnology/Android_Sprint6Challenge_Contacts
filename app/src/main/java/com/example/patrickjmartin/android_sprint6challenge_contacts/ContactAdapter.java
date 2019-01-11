@@ -75,8 +75,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             viewHolder.contactImage.setImageBitmap(fromCache);
         } else {
             isCancelled.set(false);
-            new Thread(() -> bitmap.set(NetworkAdapter.httpImageRequest(contacts.get(i),
-                    true, imageCache, isCancelled))).start();
+            new Thread(() -> {
+                bitmap.set(NetworkAdapter.httpImageRequest(contacts.get(i),
+                        true, imageCache, isCancelled));
+            }).start();
 
             viewHolder.contactImage.setImageBitmap(bitmap.get());
         }
