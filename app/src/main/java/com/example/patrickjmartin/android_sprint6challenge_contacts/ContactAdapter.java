@@ -68,7 +68,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
         //TODO Image will be handled via cache.
 
-        
+
 
     }
 
