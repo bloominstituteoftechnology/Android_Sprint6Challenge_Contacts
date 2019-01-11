@@ -23,6 +23,7 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.View
     Bitmap bitmap = null;
     final AtomicBoolean canceled = new AtomicBoolean(false);
     private Activity activity;
+    static ImageCache cache = ImageCache.getInstance();
 
     UsersListAdapter(Activity activity, List<User> items) {
         this.activity = activity;
@@ -33,6 +34,7 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.View
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_list_content, parent, false);
+        cache.initializeCache();
         return new ViewHolder(view);
     }
 
@@ -53,8 +55,16 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.View
                 " " +
                 users.get(position).getFirst() +
                 users.get(position).getLast());
-        holder.userPhoneNumber.setText(users.get(position).getPhone());
-        canceled.set(false);
+        Bitmap bitmapFromCache = (Bitmap)cache.getImageFromCache(
+                users.get(position)
+                        .getPictureThumbnail()
+                        .substring(users
+                                .get(position)
+                                .pictureThumbnail.length() - 6, users.get(position).pictureThumbnail.length()));
+        if(bitmapFromCache != null){
+            holder.userImage.setImageBitmap(bitmapFromCache);
+        }else{
+            canceled.set(false);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -62,14 +72,15 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.View
                 }
             }).start();
 
-        Log.i("onBindViewHolder", position + " bound");
-        holder.userImage.setImageBitmap(bitmap);
+            Log.i("onBindViewHolder", position + " bound");
+            holder.userImage.setImageBitmap(bitmap);
+        }
     }
 
     @Override
     public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
-        canceled.set(true);
+        //canceled.set(true);
         Log.i("ViewDetachedFromWindow", "canceled");
     }
 

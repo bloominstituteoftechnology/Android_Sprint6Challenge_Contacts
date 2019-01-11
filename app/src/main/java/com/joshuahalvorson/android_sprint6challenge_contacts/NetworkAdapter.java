@@ -14,6 +14,9 @@ import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NetworkAdapter {
+    static ImageCache cache = ImageCache.getInstance();
+
+
     public interface NetworkCallback {
         void returnResult(Boolean success, String result);
     }
@@ -73,6 +76,7 @@ public class NetworkAdapter {
     }
 
     public static Bitmap httpImageRequest(String urlString, final AtomicBoolean canceled){
+        cache.initializeCache();
         if(canceled.get()){
             Log.i("ImageRequestCanceled", urlString);
             return null;
@@ -115,6 +119,7 @@ public class NetworkAdapter {
                 connection.disconnect();
             }
         }
+        cache.addImageToCache(urlString.substring(urlString.length() - 6, urlString.length()), image);
         return image;
     }
 }
