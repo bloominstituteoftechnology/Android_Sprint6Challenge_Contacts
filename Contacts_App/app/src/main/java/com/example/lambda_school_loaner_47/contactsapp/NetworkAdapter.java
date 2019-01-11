@@ -64,7 +64,11 @@ public class NetworkAdapter {
         return result;
     }
 
-    public static Bitmap httpImageRequest(String urlString) {
+    public static Bitmap httpImageRequest(String urlString, AtomicBoolean canceled) {
+
+        if (canceled.get()){
+            return null;
+        }
         Bitmap            image      = null;
         InputStream       stream     = null;
         HttpURLConnection connection = null;
@@ -72,6 +76,9 @@ public class NetworkAdapter {
             URL url    = new URL(urlString);
             connection = (HttpURLConnection) url.openConnection();
             connection.connect();
+            if (canceled.get()){
+                return null;
+            }
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 stream = connection.getInputStream();
