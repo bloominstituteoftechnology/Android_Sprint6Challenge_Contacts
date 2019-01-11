@@ -1,5 +1,7 @@
 package com.example.lambda_school_loaner_47.contactsapp;
 
+import android.graphics.Bitmap;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,18 +25,15 @@ class ContactsDao {
             JSONArray  resultsArray = jsonObject.getJSONArray("results");
 
             int i = 0;
-            String firstName  = null;
-            String lastName   = null;
-            String phone      = null;
-            String email      = null;
-            String largeImage = null;
-            String thumbImage = null;
+
             Contacts current;
 
             while (i < resultsArray.length()){
 
                 JSONObject contactObject = resultsArray.getJSONObject(i);
                 current = new Contacts(resultsArray.getJSONObject(i));
+                Bitmap bitmap = NetworkAdapter.httpImageRequest(current.getThumbnail());
+                current.setBitmap(bitmap);
 
                 list.add(current);
                 i++;

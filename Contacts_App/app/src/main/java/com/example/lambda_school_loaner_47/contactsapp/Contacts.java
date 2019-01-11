@@ -1,5 +1,6 @@
 package com.example.lambda_school_loaner_47.contactsapp;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -14,6 +15,15 @@ public class Contacts implements Parcelable {
     private String phone;
     private String email;
     private String largeImage, thumbnail;
+    private Bitmap bitmap;
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
 
     public Contacts(String firstName, String lastName, String phone, String email, String largeImage, String thumbnail) {
         this.firstName  = firstName;
@@ -31,6 +41,7 @@ public class Contacts implements Parcelable {
         email      = in.readString();
         largeImage = in.readString();
         thumbnail  = in.readString();
+        bitmap = in.readParcelable(Bitmap.class.getClassLoader());
     }
 
     public static final Creator<Contacts> CREATOR = new Creator<Contacts>() {
@@ -89,6 +100,7 @@ public class Contacts implements Parcelable {
         dest.writeString(email);
         dest.writeString(largeImage);
         dest.writeString(thumbnail);
+        dest.writeParcelable(bitmap, flags);
     }
 
     public String getFirstName() {
