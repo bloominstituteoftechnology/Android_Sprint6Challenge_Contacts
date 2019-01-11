@@ -12,12 +12,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyViewHolder> {
 
     public static final String CONTACT_ADAPTER = "contact adapter";
     Context context;
     ArrayList<Contacts> list;
+    AtomicBoolean canceled = new AtomicBoolean();
 
     public ContactsAdapter(ArrayList<Contacts> list) {
         this.list = list;

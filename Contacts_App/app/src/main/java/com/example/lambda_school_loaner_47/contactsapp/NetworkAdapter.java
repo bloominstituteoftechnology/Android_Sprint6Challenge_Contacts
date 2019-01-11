@@ -7,40 +7,26 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NetworkAdapter {
-    public static final String GET = "GET";
-    public static final String POST = "POST";
-    public static final String PUT = "PUT";
-    public static final String DELETE = "DELETE";
-    public static final int TIMEOUT = 3000;
 
-    public static String httpRequest(String stringUrl, String requestType) {
-        return httpRequest(stringUrl, requestType, "");
+    public interface NetworkCallback {
+        void returnResult(Boolean success, String result);
     }
 
-    public static String httpRequest(String stringUrl, String requestType, String body) {
+
+    public static String httpRequest(String stringUrl, NetworkCallback callback) {
         String            result      = "";
         InputStream       stream      = null;
         HttpURLConnection connection  = null;
         try {
             URL url    = new URL(stringUrl);
             connection = (HttpURLConnection) url.openConnection();
-            connection.setReadTimeout(TIMEOUT);
-            connection.setConnectTimeout(TIMEOUT);
-            connection.setRequestMethod(requestType);
-
-            if (requestType.equals(GET) || requestType.equals(DELETE)) {
-                connection.connect();
-            } else if (requestType.equals(POST) || requestType.equals(PUT)) {
-                OutputStream outputStream = connection.getOutputStream();
-                outputStream.write(body.getBytes());
-                outputStream.close();
-            }
+            connection.connect();
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 stream = connection.getInputStream();
@@ -73,6 +59,7 @@ public class NetworkAdapter {
                     e.printStackTrace();
                 }
             }
+            callback.returnResult(true, result);
         }
         return result;
     }
@@ -84,8 +71,6 @@ public class NetworkAdapter {
         try {
             URL url    = new URL(urlString);
             connection = (HttpURLConnection) url.openConnection();
-            connection.setReadTimeout(TIMEOUT);
-            connection.setConnectTimeout(TIMEOUT);
             connection.connect();
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
