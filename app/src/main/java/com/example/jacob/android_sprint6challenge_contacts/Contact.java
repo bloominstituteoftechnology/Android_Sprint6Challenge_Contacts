@@ -6,7 +6,7 @@ import org.json.JSONObject;
 public class Contact {
     int id;
     String name;
-    private String phone;
+    String phone;
     private String email;
     String imageUrl;
 

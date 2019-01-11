@@ -38,7 +38,7 @@ public class ContactListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
-    private static ArrayList<Contact> contactList;
+    public static ArrayList<Contact> contactList;
     static Context context;
     SimpleItemRecyclerViewAdapter listAdapter;
 
@@ -120,7 +120,6 @@ public class ContactListActivity extends AppCompatActivity {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, ContactDetailActivity.class);
                     intent.putExtra(ContactDetailFragment.ARG_ITEM_ID, contact.id);
-
                     context.startActivity(intent);
                 }
             }
