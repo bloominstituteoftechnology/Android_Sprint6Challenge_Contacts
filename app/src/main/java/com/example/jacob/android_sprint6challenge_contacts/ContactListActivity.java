@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,9 @@ import android.widget.TextView;
 
 import com.example.jacob.android_sprint6challenge_contacts.dummy.DummyContent;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An activity representing a list of Contacts. This activity
@@ -33,11 +36,15 @@ public class ContactListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+    private static ArrayList<Contact> contactList;
+    static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_list);
+
+        context = this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -60,28 +67,44 @@ public class ContactListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-        View recyclerView = findViewById(R.id.contact_list);
+        final View recyclerView = findViewById(R.id.contact_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+//        setupRecyclerView((RecyclerView) recyclerView);
+
+        AtomicBoolean canceled = new AtomicBoolean(false);
+        ContactsDao.getContacts(canceled, new ContactsDao.ObjectCallback<ArrayList<Contact>>() {
+            @Override
+            public void returnContacts(ArrayList<Contact> contacts) {
+                contactList = contacts;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setupRecyclerView((RecyclerView) recyclerView);
+                    }
+                });
+//                Log.i("OutputTest", contacts.toString());
+            }
+        });
+
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, mTwoPane));
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, contactList, mTwoPane));
     }
 
     public static class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final ContactListActivity mParentActivity;
-        private final List<DummyContent.DummyItem> mValues;
+        private final ArrayList<Contact> mValues;
         private final boolean mTwoPane;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DummyContent.DummyItem item = (DummyContent.DummyItem) view.getTag();
+                Contact contact = (Contact) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(ContactDetailFragment.ARG_ITEM_ID, item.id);
+                    arguments.putString(ContactDetailFragment.ARG_ITEM_ID, String.valueOf(contact.id));
                     ContactDetailFragment fragment = new ContactDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -90,15 +113,16 @@ public class ContactListActivity extends AppCompatActivity {
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, ContactDetailActivity.class);
-                    intent.putExtra(ContactDetailFragment.ARG_ITEM_ID, item.id);
+                    intent.putExtra(ContactDetailFragment.ARG_ITEM_ID, contact.id);
 
                     context.startActivity(intent);
                 }
             }
         };
 
+
         SimpleItemRecyclerViewAdapter(ContactListActivity parent,
-                                      List<DummyContent.DummyItem> items,
+                                      ArrayList<Contact> items,
                                       boolean twoPane) {
             mValues = items;
             mParentActivity = parent;
@@ -114,8 +138,8 @@ public class ContactListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+//            holder.mIdView.setText(mValues.get(position).id);
+            holder.mContentView.setText(mValues.get(position).name);
 
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
@@ -123,7 +147,11 @@ public class ContactListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            if (mValues == null) {
+                return 0;
+            } else {
+                return mValues.size();
+            }
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {

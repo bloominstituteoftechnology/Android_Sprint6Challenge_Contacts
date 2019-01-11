@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ContactsDao {
@@ -38,7 +37,7 @@ public class ContactsDao {
 
                     for (int i = 0; i < resultsArray.length(); ++i) {
                         try {
-                            contacts.add(new Contact(resultsArray.getJSONObject(i)), contacts.size());
+                            contacts.add(new Contact(resultsArray.getJSONObject(i),contacts.size()));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

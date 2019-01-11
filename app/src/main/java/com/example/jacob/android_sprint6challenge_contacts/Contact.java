@@ -5,7 +5,10 @@ import org.json.JSONObject;
 
 public class Contact {
     int id;
-    private String name, phone, email, imageUrl;
+    String name;
+    private String phone;
+    private String email;
+    private String imageUrl;
 
     public Contact(int id, String name, String phone, String email, String imageUrl) {
         this.id = id;
