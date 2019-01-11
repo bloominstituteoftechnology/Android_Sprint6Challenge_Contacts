@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -104,6 +103,7 @@ public class ContactListActivity extends AppCompatActivity {
         private final ContactListActivity mParentActivity;
         private final ArrayList<Contact> mValues;
         private final boolean mTwoPane;
+        private AtomicBoolean canceledStatus;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -133,6 +133,7 @@ public class ContactListActivity extends AppCompatActivity {
             mValues = items;
             mParentActivity = parent;
             mTwoPane = twoPane;
+            canceledStatus = new AtomicBoolean(false);
         }
 
         @Override
@@ -143,36 +144,34 @@ public class ContactListActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, final int position) {
+        public void onBindViewHolder(final ViewHolder holder, int position) {
+            canceledStatus.set(false);
             final String imageUrl = mValues.get(position).imageUrl;
             File file = getFileFromCache(PublicFunctions.getSearchText(imageUrl));
             if (file == null) {
                 Bitmap bitmap;
-                    holder.mImageView.setImageResource(R.color.colorPrimaryDark);
-                    AtomicBoolean cancelBool = new AtomicBoolean(false);
-                    ContactsDao.ObjectCallback<Boolean> callback = new ContactsDao.ObjectCallback<Boolean>() {
-                        @Override
-                        public void returnObjects(Boolean object) {
-                            if (object) {
-                                File file = getFileFromCache(PublicFunctions.getSearchText(imageUrl));
-                                Bitmap bitmap = null;
-                                try {
-                                    bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-                                } catch (FileNotFoundException e1) {
-                                    e1.printStackTrace();
-                                }
-                                runOnUiThread(new Runnable() {
-                                                  @Override
-                                                  public void run() {
-                                                      notifyItemChanged(position);
-                                                  }
-                                              });
-
-//                                holder.mImageView.setImageBitmap(bitmap);
+                holder.mImageView.setImageResource(R.color.colorPrimaryDark);
+                ContactsDao.ObjectCallback<Boolean> callback = new ContactsDao.ObjectCallback<Boolean>() {
+                    @Override
+                    public void returnObjects(Boolean object) {
+                        if (object) {
+                            File file = getFileFromCache(PublicFunctions.getSearchText(imageUrl));
+                            Bitmap bitmap = null;
+                            try {
+                                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                            } catch (FileNotFoundException e1) {
+                                e1.printStackTrace();
                             }
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    notifyItemChanged(holder.getAdapterPosition());
+                                }
+                            });
                         }
-                    };
-                    ContactsDao.getImageFile(imageUrl, context, cancelBool, callback);
+                    }
+                };
+                ContactsDao.getImageFile(imageUrl, context, canceledStatus, callback);
             } else {
                 Bitmap bitmap = null;
                 try {
@@ -187,6 +186,12 @@ public class ContactListActivity extends AppCompatActivity {
             holder.mIdView.setText(String.valueOf(mValues.get(position).id));
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
+        }
+
+        @Override
+        public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
+            super.onViewDetachedFromWindow(holder);
+            canceledStatus.set(true);
         }
 
         @Override
@@ -239,9 +244,6 @@ public class ContactListActivity extends AppCompatActivity {
     }
 
 
-
-
-
 }
 
-//TODO Remove atomicBoolean from network adapter.
+//TODO Remove canceledStatus from network adapter.
