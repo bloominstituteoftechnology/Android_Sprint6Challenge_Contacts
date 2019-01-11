@@ -14,11 +14,17 @@ class ContactsDao {
 
     public static ArrayList<Contacts> getContacts(){
 
+        NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
+            @Override
+            public void returnResult(Boolean success, String result) {
+                return ;
+            }
+        };
+
         Contacts            contact = null;
         ArrayList<Contacts> list    = new ArrayList<>();
         String              url     = BASE_URL;
-        String              result  = NetworkAdapter.httpRequest(url,
-                NetworkAdapter.GET);
+        String              result  = NetworkAdapter.httpRequest(url, callback);
 
         try {
             JSONObject jsonObject   = new JSONObject(result);
@@ -32,8 +38,6 @@ class ContactsDao {
 
                 JSONObject contactObject = resultsArray.getJSONObject(i);
                 current = new Contacts(resultsArray.getJSONObject(i));
-                Bitmap bitmap = NetworkAdapter.httpImageRequest(current.getThumbnail());
-                current.setBitmap(bitmap);
 
                 list.add(current);
                 i++;
