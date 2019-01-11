@@ -21,6 +21,10 @@ public class NetworkAdapter {
         void returnResult(Boolean success, String result);
     }
 
+    public interface NetworkImageCallback {
+        void returnResult(Boolean success, Bitmap bitmap);
+    }
+
     public static void httpGetRequest(final String urlString, final AtomicBoolean canceled, final NetworkCallback callback) {
         new Thread(new Runnable() {
             @Override
@@ -127,10 +131,11 @@ public class NetworkAdapter {
         return resultImage;
     }
 
-    static Bitmap httpImageRequest(String urlString, final AtomicBoolean canceled, final NetworkCallback callback) {
+    public static void httpImageRequest(final String urlString, final AtomicBoolean canceled, final NetworkImageCallback callback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                boolean success = false;
                 Bitmap resultImage = null;
                 InputStream stream = null;
                 HttpURLConnection connection = null;
@@ -158,6 +163,7 @@ public class NetworkAdapter {
                         stream = connection.getInputStream();
                         if (stream != null) {
                             resultImage = BitmapFactory.decodeStream(stream);
+                            success = true;
                         }
                     }
                 } catch (IOException e) {
@@ -176,12 +182,11 @@ public class NetworkAdapter {
                 }
                 if(canceled.get()) {
                     Log.i("GetRequestCanceled", urlString);
-                    return null;
+                    return;
                 }
-                return resultImage;
+                callback.returnResult(success, resultImage);
             }
-        }
-
+        });
     }
 
 }

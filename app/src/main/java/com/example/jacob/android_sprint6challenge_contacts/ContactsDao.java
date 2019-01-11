@@ -42,7 +42,7 @@ public class ContactsDao {
 
                     for (int i = 0; i < resultsArray.length(); ++i) {
                         try {
-                            contacts.add(new Contact(resultsArray.getJSONObject(i),contacts.size()));
+                            contacts.add(new Contact(resultsArray.getJSONObject(i), contacts.size()));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -50,7 +50,7 @@ public class ContactsDao {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                    objectCallback.returnObjects(contacts);
+                objectCallback.returnObjects(contacts);
             }
         };
         if (canceled.get()) {
@@ -95,54 +95,50 @@ public class ContactsDao {
         }
     }
 
-    static void getImageFile(final String url, Context context, final AtomicBoolean canceled, final boolean objectCallback) {
+    static void getImageFile(final String url, final Context context, final AtomicBoolean canceled, final boolean objectCallback) {
 
-        final NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
+        final NetworkAdapter.NetworkImageCallback callback = new NetworkAdapter.NetworkImageCallback() {
 
             @Override
-            public void returnResult(Boolean success, String result) {
+            public void returnResult(Boolean success, Bitmap result) {
                 if (canceled.get()) {
                     Log.i("GetRequestCanceled", url);
                     return;
                 }
-            }
-        }
 
-        File file = null;
-        if (url != null) {
-            String searchText = PublicFunctions.getSearchText(url);
-            File[] items = context.getCacheDir().listFiles();
-            Boolean fileFound = false;
-            for (File item : items) {
-                if (item.getName().contains(searchText)) {
-                    fileFound = true;
-                    break;
-                }
-            }
-            if (!fileFound) {
-                Bitmap bitmap = NetworkAdapter.httpImageRequest(url);
-                FileOutputStream fileOutputStream = null;
-                try {
-                    file = File.createTempFile(searchText, null, context.getCacheDir());
-                    fileOutputStream = new FileOutputStream(file);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (fileOutputStream != null) {
+                File file = null;
+                if (url != null) {
+                    String searchText = PublicFunctions.getSearchText(url);
+                    File[] items = context.getCacheDir().listFiles();
+                    Boolean fileFound = false;
+                    for (File item : items) {
+                        if (item.getName().contains(searchText)) {
+                            fileFound = true;
+                            break;
+                        }
+                    }
+                    if (!fileFound) {
+                        Bitmap bitmap = NetworkAdapter.httpImageRequest(url);
+                        FileOutputStream fileOutputStream = null;
                         try {
-                            fileOutputStream.close();
+                            file = File.createTempFile(searchText, null, context.getCacheDir());
+                            fileOutputStream = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
                         } catch (IOException e) {
                             e.printStackTrace();
+                        } finally {
+                            if (fileOutputStream != null) {
+                                try {
+                                    fileOutputStream.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                     }
                 }
             }
-        }
+        };
+        NetworkAdapter.httpImageRequest(url, canceled, callback);
     }
-
-
-
-
-
 }
