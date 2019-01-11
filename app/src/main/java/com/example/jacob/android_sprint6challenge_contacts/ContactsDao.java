@@ -95,7 +95,7 @@ public class ContactsDao {
         }
     }
 
-    static void getImageFile(final String url, final Context context, final AtomicBoolean canceled, final boolean objectCallback) {
+    static void getImageFile(final String url, final Context context, final AtomicBoolean canceled, final ObjectCallback<Boolean> objectCallback) {
 
         final NetworkAdapter.NetworkImageCallback callback = new NetworkAdapter.NetworkImageCallback() {
 
@@ -106,39 +106,30 @@ public class ContactsDao {
                     return;
                 }
 
-                File file = null;
-                if (url != null) {
-                    String searchText = PublicFunctions.getSearchText(url);
-                    File[] items = context.getCacheDir().listFiles();
-                    Boolean fileFound = false;
-                    for (File item : items) {
-                        if (item.getName().contains(searchText)) {
-                            fileFound = true;
-                            break;
-                        }
-                    }
-                    if (!fileFound) {
-                        Bitmap bitmap = NetworkAdapter.httpImageRequest(url);
-                        FileOutputStream fileOutputStream = null;
+                File file;
+                String searchText = PublicFunctions.getSearchText(url);
+                FileOutputStream fileOutputStream = null;
+                try {
+                    file = File.createTempFile(searchText, null, context.getCacheDir());
+                    fileOutputStream = new FileOutputStream(file);
+                    result.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                    success = true;
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (fileOutputStream != null) {
                         try {
-                            file = File.createTempFile(searchText, null, context.getCacheDir());
-                            fileOutputStream = new FileOutputStream(file);
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                            fileOutputStream.close();
                         } catch (IOException e) {
                             e.printStackTrace();
-                        } finally {
-                            if (fileOutputStream != null) {
-                                try {
-                                    fileOutputStream.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
                         }
                     }
                 }
+                objectCallback.returnObjects(success);
+
             }
         };
-        NetworkAdapter.httpImageRequest(url, canceled, callback);
+        NetworkAdapter.httpImageRequest(url,canceled,callback);
     }
 }

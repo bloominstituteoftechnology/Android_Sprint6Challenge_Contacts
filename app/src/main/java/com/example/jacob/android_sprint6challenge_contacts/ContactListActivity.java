@@ -143,19 +143,29 @@ public class ContactListActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
-            String imageUrl = mValues.get(position).imageUrl;
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
+            final String imageUrl = mValues.get(position).imageUrl;
             File file = getFileFromCache(PublicFunctions.getSearchText(imageUrl));
-            Bitmap bitmap = null;
-            try {
-                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-                holder.mImageView.setImageBitmap(bitmap);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                holder.mImageView.setImageResource(R.color.colorPrimaryDark);
-                new getContactImageTask().execute(imageUrl,String.valueOf(position));
-            } catch (NullPointerException e) {
-                holder.mImageView.setImageResource(R.color.colorPrimaryDark);
+            if (file == null) {
+                Bitmap bitmap;
+                    holder.mImageView.setImageResource(R.color.colorPrimaryDark);
+                    AtomicBoolean cancelBool = new AtomicBoolean(false);
+                    ContactsDao.ObjectCallback<Boolean> callback = new ContactsDao.ObjectCallback<Boolean>() {
+                        @Override
+                        public void returnObjects(Boolean object) {
+                            if (object) {
+                                File file = getFileFromCache(PublicFunctions.getSearchText(imageUrl));
+                                Bitmap bitmap = null;
+                                try {
+                                    bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                                } catch (FileNotFoundException e1) {
+                                    e1.printStackTrace();
+                                }
+                                holder.mImageView.setImageBitmap(bitmap);
+                            }
+                        }
+                    };
+                    ContactsDao.getImageFile(imageUrl, context, cancelBool, callback);
             }
 
             holder.mNameView.setText(mValues.get(position).name);
@@ -187,7 +197,7 @@ public class ContactListActivity extends AppCompatActivity {
         }
     }
 
-    public static class getContactImageTask extends AsyncTask<String, Integer, Integer> {
+/*    public static class getContactImageTask extends AsyncTask<String, Integer, Integer> {
         @Override
         protected Integer doInBackground(String... strings) {
             ContactsDao.getImageFile(strings[0], context);
@@ -199,7 +209,7 @@ public class ContactListActivity extends AppCompatActivity {
             super.onPostExecute(index);
             listAdapter.notifyItemChanged(index);
         }
-    }
+    }*/
 
     private static File getFileFromCache(String searchText) {
         File file = null;
