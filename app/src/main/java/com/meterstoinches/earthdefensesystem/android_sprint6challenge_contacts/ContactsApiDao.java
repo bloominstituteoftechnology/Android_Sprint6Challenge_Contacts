@@ -7,12 +7,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class ContactsApiDao {
+    public interface ObjectCallback<T> {
+        void returnContacts(ArrayList<T> object);
+    }
+
     public static void getAllContacts(final ObjectCallback<Contact> objectCallback) {
         final ArrayList<Contact> contacts = new ArrayList<>();
         final NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
             @Override
             public void returnResult(Boolean success, String page) {
-                // process page of data
                 String nextUrl = null;
                 try {
                     nextUrl = new JSONObject(page).getString("next");
@@ -20,7 +23,6 @@ public class ContactsApiDao {
                     e.printStackTrace();
                     nextUrl = null;
                 }
-                // yay recursion!
                 if (nextUrl != null) {
                     NetworkAdapter.httpGetRequest(nextUrl, this);
                 }
@@ -40,13 +42,10 @@ public class ContactsApiDao {
                 }
 
                 if (nextUrl == null) {
-                    /*synchronized (planets) {
-                        planets.notify();
-                    }*/
                     objectCallback.returnContacts(contacts);
                 }
             }
         };
-        NetworkAdapter.httpGetRequest("https://swapi.co/api/planets", callback);
+        NetworkAdapter.httpGetRequest("https://randomuser.me/api/?format=json&inc=name,email,phone,picture&results=1000", callback);
     }
 }
