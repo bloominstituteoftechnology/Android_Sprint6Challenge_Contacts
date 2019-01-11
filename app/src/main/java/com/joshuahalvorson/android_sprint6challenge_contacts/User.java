@@ -3,7 +3,9 @@ package com.joshuahalvorson.android_sprint6challenge_contacts;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     String title, first, last, email, phone, pictureThumbnail, pictureLarge;
 
     public User(String title, String first, String last, String email, String phone, String pictureThumbnail, String pictureLarge) {

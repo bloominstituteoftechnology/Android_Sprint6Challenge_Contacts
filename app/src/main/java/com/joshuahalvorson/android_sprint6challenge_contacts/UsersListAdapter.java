@@ -1,5 +1,6 @@
 package com.joshuahalvorson.android_sprint6challenge_contacts;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,8 +22,10 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.View
     private final List<User> users;
     Bitmap bitmap = null;
     final AtomicBoolean canceled = new AtomicBoolean(false);
+    private Activity activity;
 
-    UsersListAdapter(List<User> items) {
+    UsersListAdapter(Activity activity, List<User> items) {
+        this.activity = activity;
         users = items;
     }
 
@@ -35,6 +38,16 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.View
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+        holder.parentView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent detailIntent = new Intent(activity, UserDetailActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user", users.get(position));
+                detailIntent.putExtras(bundle);
+                activity.startActivity(detailIntent);
+            }
+        });
         holder.userName.setText(
                 users.get(position).getTitle() +
                 " " +
