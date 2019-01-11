@@ -1,0 +1,66 @@
+package com.example.lambda_school_loaner_47.contactsapp;
+
+import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
+public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyViewHolder> {
+
+    Context context;
+    ArrayList<Contacts> list;
+
+    public ContactsAdapter(ArrayList<Contacts> list) {
+        this.list = list;
+    }
+
+    @NonNull
+    @Override
+    public ContactsAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+
+        context = parent.getContext();
+        View view = LayoutInflater.from(context)
+                .inflate(R.layout.list_item_contacts, parent, false);
+        return new MyViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ContactsAdapter.MyViewHolder myViewHolder, int i) {
+        //todo replace holder
+        myViewHolder.fullName.setText("PlaceHolder");
+        myViewHolder.parent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DetailsActivity.class);
+                context.startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return 0;
+    }
+
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+        ConstraintLayout parent;
+        TextView         fullName;
+        ImageView        pic;
+
+        public MyViewHolder(@NonNull View contact) {
+            super(contact);
+
+            parent   = contact.findViewById(R.id.parentLayout);
+            fullName = contact.findViewById(R.id.tvName);
+            pic = contact.findViewById(R.id.ivThumbnail);
+        }
+    }
+}
