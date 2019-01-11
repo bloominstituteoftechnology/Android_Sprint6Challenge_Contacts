@@ -98,7 +98,7 @@ public class ContactListActivity extends AppCompatActivity {
         recyclerView.setAdapter(listAdapter);
     }
 
-    public static class SimpleItemRecyclerViewAdapter
+    public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final ContactListActivity mParentActivity;
@@ -161,11 +161,26 @@ public class ContactListActivity extends AppCompatActivity {
                                 } catch (FileNotFoundException e1) {
                                     e1.printStackTrace();
                                 }
-                                holder.mImageView.setImageBitmap(bitmap);
+                                runOnUiThread(new Runnable() {
+                                                  @Override
+                                                  public void run() {
+                                                      notifyItemChanged(position);
+                                                  }
+                                              });
+
+//                                holder.mImageView.setImageBitmap(bitmap);
                             }
                         }
                     };
                     ContactsDao.getImageFile(imageUrl, context, cancelBool, callback);
+            } else {
+                Bitmap bitmap = null;
+                try {
+                    bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                } catch (FileNotFoundException e1) {
+                    e1.printStackTrace();
+                }
+                holder.mImageView.setImageBitmap(bitmap);
             }
 
             holder.mNameView.setText(mValues.get(position).name);

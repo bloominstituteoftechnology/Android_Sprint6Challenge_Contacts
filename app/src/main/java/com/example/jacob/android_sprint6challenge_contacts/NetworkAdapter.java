@@ -186,7 +186,7 @@ public class NetworkAdapter {
                 }
                 callback.returnResult(success, resultImage);
             }
-        });
+        }).start();
     }
 
 }
