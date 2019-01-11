@@ -20,18 +20,10 @@ public class NetworkAdapter {
         new Thread(new Runnable() {
             @Override
             public void run() {
-
-                try {
-                    Thread.sleep((long) (Math.random() * 500));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 if(canceled.get()) {
                     Log.i("GetRequestCanceled", urlString);
                     return;
                 }
-
 
                 String result = "";
                 boolean success = false;
@@ -90,11 +82,7 @@ public class NetworkAdapter {
 
                     callback.returnResult(success, result);
                 }
-//                return result;
-
             }
         }).start();
-
-
     }
 }
