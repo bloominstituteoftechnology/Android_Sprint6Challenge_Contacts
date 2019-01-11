@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyViewHolder> {
 
+    public static final String CONTACT_ADAPTER = "contact adapter";
     Context context;
     ArrayList<Contacts> list;
 
@@ -35,12 +36,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
     @Override
     public void onBindViewHolder(@NonNull ContactsAdapter.MyViewHolder myViewHolder, int i) {
         //todo replace holder
-        Contacts contact = list.get(i);
-        myViewHolder.fullName.setText(contact.getFirstName());
+        final Contacts contact = list.get(i);
+        myViewHolder.fullName.setText(contact.getFullName());
         myViewHolder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, DetailsActivity.class);
+                intent.putExtra(CONTACT_ADAPTER, contact);
                 context.startActivity(intent);
             }
         });
