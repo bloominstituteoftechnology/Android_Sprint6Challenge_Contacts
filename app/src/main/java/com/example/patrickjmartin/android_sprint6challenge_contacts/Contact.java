@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 public class Contact implements Serializable {
 
-    String titleName, firstName, lastName, email, phoneNumber, pictureLarge, pictureThumb;
+     private String titleName, firstName, lastName, email, phoneNumber, pictureLarge, pictureThumb, fullName;
 
     public Contact(String titleName, String firstName, String lastName, String email, String phoneNumber, String pictureLarge, String pictureThumb) {
         this.titleName = titleName;
@@ -61,6 +61,8 @@ public class Contact implements Serializable {
             e.printStackTrace();
         }
 
+        this.fullName = toCamelCase(titleName + " " + firstName + " " + lastName);
+
     }
 
     public String getTitleName() {
@@ -73,6 +75,10 @@ public class Contact implements Serializable {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public String getFullName() {
+        return fullName;
     }
 
     public String getEmail() {
@@ -89,5 +95,22 @@ public class Contact implements Serializable {
 
     public String getPictureThumb() {
         return pictureThumb;
+    }
+
+    public static String toCamelCase(String initString) {
+        String newString = "";
+        if (initString == null || initString == "" ) {
+            return newString;
+        } else {
+            String[] initAry = initString.split(" ");
+            for (int i = 0; i < initAry.length; i++) {
+                String first = initAry[i].substring(0,1).toUpperCase();
+                String rest = initAry[i].substring(1).toLowerCase();
+
+                if (i == 0) newString += (first + rest);
+                else newString += (" " + first + rest);
+            }
+        }
+        return newString;
     }
 }

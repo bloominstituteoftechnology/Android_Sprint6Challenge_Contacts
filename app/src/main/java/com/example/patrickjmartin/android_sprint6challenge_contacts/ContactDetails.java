@@ -3,7 +3,7 @@ package com.example.patrickjmartin.android_sprint6challenge_contacts;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class ContactDeails extends AppCompatActivity {
+public class ContactDetails extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

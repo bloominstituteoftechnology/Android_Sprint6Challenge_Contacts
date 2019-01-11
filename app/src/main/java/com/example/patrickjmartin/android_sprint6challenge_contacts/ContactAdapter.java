@@ -1,13 +1,11 @@
 package com.example.patrickjmartin.android_sprint6challenge_contacts;
 
 import android.app.Activity;
-import android.arch.paging.PagedListAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.recyclerview.extensions.AsyncDifferConfig;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +15,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
+        private ConstraintLayout constraintLayout;
         private ImageView contactImage;
         private TextView contactDetails;
         private ProgressBar progressBar;
@@ -29,6 +29,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            constraintLayout = itemView.findViewById(R.id.parent_view_contacts);
             contactImage = itemView.findViewById(R.id.contact_image);
             contactDetails = itemView.findViewById(R.id.contact_textview);
             progressBar = itemView.findViewById(R.id.progressBar);
@@ -41,6 +42,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     private Bitmap image = null;
     private Activity activity;
     private Context context;
+    final AtomicBoolean isCancelled = new AtomicBoolean(false);
 
     ContactAdapter(Activity activity, ArrayList<Contact> contacts) {
         this.activity = activity;
@@ -59,18 +61,24 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
 
-        String contactTextViewContents = contacts.get(i).getTitleName() + " " +
-                contacts.get(i).getFirstName() + " " + contacts.get(i).getLastName();
+        String contactTextViewContents = contacts.get(i).getFullName();
         viewHolder.contactDetails.setText(contactTextViewContents);
-
 
         //TODO Image will be handled via cache.
 
-
-
+        viewHolder.constraintLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent detailsIntent = new Intent(activity, ContactDetails.class);
+                detailsIntent.putExtra("contact", contacts.get(i));
+                activity.startActivity(detailsIntent);
+            }
+        });
     }
+
+    
 
     @Override
     public int getItemCount() {

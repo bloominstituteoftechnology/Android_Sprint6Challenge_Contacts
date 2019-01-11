@@ -19,7 +19,7 @@ public class NetworkAdapter {
     }
 
 
-    public static void httpGetRequest(final String urlString, final AtomicBoolean canceled, final NetworkCallback callback) {
+    public static void httpGetRequest(final String urlString, final NetworkCallback callback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -30,21 +30,8 @@ public class NetworkAdapter {
                 try {
                     URL url = new URL(urlString);
                     connection = (HttpURLConnection) url.openConnection();
-
-                    if(canceled.get()) {
-                        Log.i("GetRequestCanceled", urlString);
-                        throw new IOException();
-                    }
-
                     connection.connect();
-
                     int responseCode = connection.getResponseCode();
-
-                    if(canceled.get()) {
-                        Log.i("GetRequestCanceled", urlString);
-                        throw new IOException();
-                    }
-
                     if(responseCode == HttpURLConnection.HTTP_OK) {
                         stream = connection.getInputStream();
                         if(stream != null) {
@@ -61,8 +48,6 @@ public class NetworkAdapter {
                     } else {
                         result = String.valueOf(responseCode);
                     }
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
@@ -81,8 +66,64 @@ public class NetworkAdapter {
                 }
             }
         }).start();
-
-
     }
+
+    public static Bitmap httpImageRequest(Contact contact, String where, ContactImageCache imageCache,
+                                          final AtomicBoolean cancelled) {
+
+        String urlString = null;
+        String cacheKey = null;
+
+        if (where.equals("recycler")) {
+           urlString = contact.getPictureThumb();
+           cacheKey = contact.getTitleName() + contact.getFirstName() + contact.getLastName() + "Large";
+        } else {
+            urlString = contact.getPictureLarge();
+            cacheKey = contact.getTitleName() + contact.getFirstName() + contact.getLastName() + "Thumb";
+        }
+
+        if(cancelled.get()) {
+            Log.i("NetworkAdapter Class - httpImageRequest has been Cancelled:\n", urlString);
+            return null;
+        }
+
+        Bitmap image = null;
+        InputStream stream = null;
+        HttpURLConnection connection = null;
+        try{
+            URL url = new URL(urlString);
+            connection = (HttpURLConnection) url.openConnection();
+            if(cancelled.get()) {
+                throw new IOException();
+            }
+            connection.connect();
+            int responseCode = connection.getResponseCode();
+            if(responseCode == HttpURLConnection.HTTP_OK){
+                stream = connection.getInputStream();
+                if(stream != null){
+                    image = BitmapFactory.decodeStream(stream);
+                }
+            }else{
+                throw new IOException("HTTP Error code: " + responseCode);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            if(stream != null){
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(connection != null){
+                connection.disconnect();
+            }
+        }
+
+        imageCache.setObject(cacheKey, image);
+        return image;
+    }
+
 }
 

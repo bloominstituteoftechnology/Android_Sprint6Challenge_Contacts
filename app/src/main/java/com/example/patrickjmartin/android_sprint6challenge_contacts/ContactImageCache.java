@@ -15,7 +15,7 @@ public class ContactImageCache<T> {
             throw new RuntimeException("Use getINSTANCE()");
         } else {
             final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-            final int cacheSize = maxMemory / 8;
+            final int cacheSize = maxMemory / 6;
             genericCache = new LruCache<String, T>(cacheSize) {
                 protected int sizeOf(String key, Bitmap bitmap) {
                     return bitmap.getByteCount() / 1024;
