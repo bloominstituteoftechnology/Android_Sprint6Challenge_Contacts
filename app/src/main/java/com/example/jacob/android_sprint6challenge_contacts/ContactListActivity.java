@@ -145,8 +145,8 @@ public class ContactListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             canceledStatus.set(false);
-            final String imageUrl = mValues.get(position).imageUrl;
-            File file = getFileFromCache(PublicFunctions.getSearchText(imageUrl));
+            final String imageUrl = mValues.get(position).thumbImageUrl;
+            File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(imageUrl), context);
             if (file == null) {
                 Bitmap bitmap;
                 holder.mImageView.setImageResource(R.color.colorPrimaryDark);
@@ -154,7 +154,7 @@ public class ContactListActivity extends AppCompatActivity {
                     @Override
                     public void returnObjects(Boolean object) {
                         if (object) {
-                            File file = getFileFromCache(PublicFunctions.getSearchText(imageUrl));
+                            File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(imageUrl), context);
                             Bitmap bitmap = null;
                             try {
                                 bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
@@ -215,34 +215,4 @@ public class ContactListActivity extends AppCompatActivity {
             }
         }
     }
-
-/*    public static class getContactImageTask extends AsyncTask<String, Integer, Integer> {
-        @Override
-        protected Integer doInBackground(String... strings) {
-            ContactsDao.getImageFile(strings[0], context);
-            return Integer.parseInt(strings[1]);
-        }
-
-        @Override
-        protected void onPostExecute(Integer index) {
-            super.onPostExecute(index);
-            listAdapter.notifyItemChanged(index);
-        }
-    }*/
-
-    private static File getFileFromCache(String searchText) {
-        File file = null;
-        File[] items = context.getCacheDir().listFiles();
-        for (File item : items) {
-            if (item.getName().contains(searchText)) {
-                file = item;
-                break;
-            }
-        }
-        return file;
-    }
-
-
 }
-
-//TODO Remove canceledStatus from network adapter.

@@ -1,15 +1,22 @@
 package com.example.jacob.android_sprint6challenge_contacts;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jacob.android_sprint6challenge_contacts.dummy.DummyContent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A fragment representing a single Contact detail screen.
@@ -36,14 +43,19 @@ public class ContactDetailFragment extends Fragment {
     public ContactDetailFragment() {
     }
 
+    Context context;
+    AtomicBoolean canceledStatus;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        context = this.getActivity();
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
+            Bundle bundle = getArguments();
+            int temp = getArguments().getInt(ARG_ITEM_ID);
             mItem = ContactListActivity.contactList.get(getArguments().getInt(ARG_ITEM_ID));
 
             Activity activity = this.getActivity();
@@ -57,11 +69,42 @@ public class ContactDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.contact_detail, container, false);
+        final View rootView = inflater.inflate(R.layout.contact_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.contact_detail)).setText(mItem.phone);
+            ((TextView) rootView.findViewById(R.id.contact_phone)).setText(mItem.phone);
+            ((TextView) rootView.findViewById(R.id.contact_email)).setText(mItem.email);
+
+            File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(mItem.largeImageUrl), context);
+            if (file == null) {
+                ContactsDao.ObjectCallback<Boolean> callback = new ContactsDao.ObjectCallback<Boolean>() {
+                    @Override
+                    public void returnObjects(Boolean object) {
+                        if (object) {
+                            File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(mItem.largeImageUrl), context);
+                            Bitmap bitmap;
+                            try {
+                                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                                ((ImageView) rootView.findViewById(R.id.image_large)).setImageBitmap(bitmap);
+
+                            } catch (FileNotFoundException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                    }
+                };
+                ContactsDao.getImageFile(mItem.largeImageUrl, context, canceledStatus, callback);
+            } else {
+                Bitmap bitmap;
+                try {
+                    bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                    ((ImageView) rootView.findViewById(R.id.image_large)).setImageBitmap(bitmap);
+
+                } catch (FileNotFoundException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
         }
 
         return rootView;

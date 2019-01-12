@@ -7,15 +7,17 @@ public class Contact {
     int id;
     String name;
     String phone;
-    private String email;
-    String imageUrl;
+    String email;
+    String thumbImageUrl;
+    String largeImageUrl;
 
-    public Contact(int id, String name, String phone, String email, String imageUrl) {
+    public Contact(int id, String name, String phone, String email, String thumbImageUrl, String largeImageUrl) {
         this.id = id;
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.imageUrl = imageUrl;
+        this.thumbImageUrl = thumbImageUrl;
+        this.largeImageUrl = largeImageUrl;
     }
 
     public Contact(JSONObject json, int inputId) {
@@ -48,7 +50,9 @@ public class Contact {
         JSONObject imageUrls = null;
         try {
             imageUrls = json.getJSONObject("picture");
-            this.imageUrl =  imageUrls.getString("thumbnail");
+            this.thumbImageUrl =  imageUrls.getString("thumbnail");
+            this.largeImageUrl =  imageUrls.getString("large");
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
