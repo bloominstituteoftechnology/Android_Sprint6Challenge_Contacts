@@ -9,7 +9,7 @@
     tools:showIn="@layout/activity_details">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/ivLarge"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
@@ -25,7 +25,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/ivLarge" />
 
     <TextView
         android:id="@+id/tvEmail"
