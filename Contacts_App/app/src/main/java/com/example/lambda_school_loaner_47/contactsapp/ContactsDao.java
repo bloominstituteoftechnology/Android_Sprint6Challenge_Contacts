@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 class ContactsDao {
 
@@ -51,6 +52,10 @@ class ContactsDao {
         };
         NetworkAdapter.httpRequest(url, callback);
 
+    }
+
+    public static Bitmap getImage(String url, final AtomicBoolean atomicBoolean){
+        return NetworkAdapter.httpImageRequest(url, atomicBoolean);
     }
 
     public void saveBitmapToCache(){

@@ -2,6 +2,7 @@ package com.example.lambda_school_loaner_47.contactsapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
     Context context;
     ArrayList<Contacts> list;
     AtomicBoolean canceled = new AtomicBoolean();
+    Bitmap bitmap = null;
 
     public ContactsAdapter(ArrayList<Contacts> list) {
         this.list = list;
@@ -48,6 +50,16 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                 context.startActivity(intent);
             }
         });
+
+        //todo setup contact dao
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                bitmap = ContactsDao.getImage(contact.getThumbnail(),canceled);
+
+            }
+        }).start();
+        myViewHolder.pic.setImageBitmap(bitmap);
     }
 
     @Override
