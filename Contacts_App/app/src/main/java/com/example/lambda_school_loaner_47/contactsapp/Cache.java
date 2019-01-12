@@ -20,7 +20,7 @@ public class Cache {
         return instance;
     }
 
-    public LruCache<Object, Object> getLru(){
+    public LruCache getLru(){
         return cacheLru;
     }
 }

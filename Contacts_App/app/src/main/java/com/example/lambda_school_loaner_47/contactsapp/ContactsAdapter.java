@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyViewHolder> {
 
     public static final String CONTACT_ADAPTER = "contact adapter";
+    public static final String BITMAP_IMAGE = "bitmap_image";
     Context context;
     ArrayList<Contacts> list;
     AtomicBoolean canceled = new AtomicBoolean(false);
@@ -57,9 +58,12 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
             public void run() {
                 bitmap = ContactsDao.getImage(contact.getThumbnail(),canceled);
 
+                //todo find out why its crashing
+               // Cache.getInstance().getLru().put("bitmapKey", bitmap);
             }
         }).start();
         myViewHolder.pic.setImageBitmap(bitmap);
+
     }
 
     @Override
