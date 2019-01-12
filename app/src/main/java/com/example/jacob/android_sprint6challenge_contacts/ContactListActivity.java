@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -158,7 +159,8 @@ public class ContactListActivity extends AppCompatActivity {
             File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(imageUrl), context);
             if (file == null) {
                 Bitmap bitmap;
-                holder.mImageView.setImageResource(R.color.colorPrimaryDark);
+                holder.mImageView.setVisibility(View.INVISIBLE);
+//                holder.mImageView.setImageResource(R.color.colorPrimaryDark);
                 ContactsDao.ObjectCallback<Boolean> callback = new ContactsDao.ObjectCallback<Boolean>() {
                     @Override
                     public void returnObjects(Boolean object) {
@@ -190,6 +192,7 @@ public class ContactListActivity extends AppCompatActivity {
                     e1.printStackTrace();
                 }
                 holder.mImageView.setImageBitmap(bitmap);
+                holder.mImageView.setVisibility(View.VISIBLE);
             }
 
             holder.mNameView.setText(mValues.get(position).name);
