@@ -118,12 +118,9 @@ public class NetworkAdapter {
 
         ContactImageCache imageCache = ContactImageCache.getINSTANCE();
 
-        imageCache.setObject(cacheKey, image);
-
-
-
-
-
+        if(urlString.contains("thumb")) {
+            imageCache.setObject(cacheKey, image);
+        }
 
         return image;
     }

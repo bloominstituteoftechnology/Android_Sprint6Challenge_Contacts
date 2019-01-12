@@ -101,10 +101,10 @@ public class Contact implements Serializable {
 
     public String getCacheKey(boolean isSmall) {
         if (isSmall) {
-            return (pictureThumb);
-        } else {
-            return (pictureLarge);
+            return (pictureThumb.replaceFirst("^https://randomuser.me/api/portraits/", ""));
         }
+
+        return null;
     }
 
     public static String toCamelCase(String initString) {

@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
     private Activity activity;
     private Context context;
     private RecyclerView recyclerView;
+    private ContactImageCache cache;
 
 
 
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         activity = this;
         context = this;
         contacts = new ArrayList<>();
+        cache = ContactImageCache.getINSTANCE();
 
         recyclerView = findViewById(R.id.contact_recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -41,10 +43,12 @@ public class MainActivity extends AppCompatActivity {
             }).forEach(this::runOnUiThread);
         });
 
+    }
 
-
-
-
+    @Override
+    protected void onDestroy() {
+        cache.clearGenericCache();
+        super.onDestroy();
     }
 }
 
