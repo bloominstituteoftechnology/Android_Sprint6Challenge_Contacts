@@ -61,40 +61,6 @@ public class ContactsDao {
     }
 
 
-    static void getImageFile(String url, Context context) {
-        File file = null;
-        if (url != null) {
-            String searchText = PublicFunctions.getSearchText(url);
-            File[] items = context.getCacheDir().listFiles();
-            Boolean fileFound = false;
-            for (File item : items) {
-                if (item.getName().contains(searchText)) {
-                    fileFound = true;
-                    break;
-                }
-            }
-            if (!fileFound) {
-                Bitmap bitmap = NetworkAdapter.httpImageRequest(url);
-                FileOutputStream fileOutputStream = null;
-                try {
-                    file = File.createTempFile(searchText, null, context.getCacheDir());
-                    fileOutputStream = new FileOutputStream(file);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (fileOutputStream != null) {
-                        try {
-                            fileOutputStream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     static void getImageFile(final String url, final Context context, final AtomicBoolean canceled, final ObjectCallback<Boolean> objectCallback) {
 
         final NetworkAdapter.NetworkImageCallback callback = new NetworkAdapter.NetworkImageCallback() {

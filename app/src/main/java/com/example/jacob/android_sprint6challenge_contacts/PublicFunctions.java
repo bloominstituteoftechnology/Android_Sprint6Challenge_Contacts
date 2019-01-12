@@ -7,7 +7,7 @@ import java.io.File;
 public class PublicFunctions {
 
     static String getSearchText(String inputString) {
-        String outputString = inputString.substring(inputString.indexOf("portraits/") + 10);
+        String outputString = inputString.substring(inputString.indexOf("api/") + 4);
         outputString = outputString.replace('/','-');
         return outputString;
     }

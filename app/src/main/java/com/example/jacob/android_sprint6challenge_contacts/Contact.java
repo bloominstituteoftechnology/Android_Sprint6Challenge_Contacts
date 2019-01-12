@@ -26,11 +26,11 @@ public class Contact {
             JSONObject names = json.getJSONObject("name");
             String fullName = "";
 
-            fullName += names.getString("title") + ", ";
-            fullName += names.getString("first") + ", ";
-            fullName += names.getString("last") + ", ";
+            fullName += names.getString("title") + " ";
+            fullName += names.getString("first") + " ";
+            fullName += names.getString("last") + " ";
 
-            this.name = fullName;
+            this.name = capitalize(fullName);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -50,11 +50,29 @@ public class Contact {
         JSONObject imageUrls = null;
         try {
             imageUrls = json.getJSONObject("picture");
-            this.thumbImageUrl =  imageUrls.getString("thumbnail");
-            this.largeImageUrl =  imageUrls.getString("large");
+            this.thumbImageUrl = imageUrls.getString("thumbnail");
+            this.largeImageUrl = imageUrls.getString("large");
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
+    private String capitalize(String inputString) {
+        StringBuilder builder = new StringBuilder();
+        String[] wordArray = inputString.split(" ");
+        for (String word : wordArray) {
+            if (word.length() > 0) {
+                if (word.equals("mr") || word.equals("mrs") || word.equals("ms")) {
+                    word += ".";
+                }
+                builder.append(word.substring(0, 1).toUpperCase());
+                builder.append(word.substring(1, word.length()));
+                builder.append(' ');
+            }
+        }
+        return builder.toString();
+    }
+
+
 }
