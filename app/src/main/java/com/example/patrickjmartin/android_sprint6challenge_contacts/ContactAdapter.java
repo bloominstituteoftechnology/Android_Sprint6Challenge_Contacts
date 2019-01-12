@@ -64,7 +64,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
-        AtomicReference<Bitmap> bitmap = null;
+
         String contactTextViewContents = contacts.get(i).getFullName();
         viewHolder.contactDetails.setText(contactTextViewContents);
 
@@ -74,13 +74,15 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         if (fromCache != null) {
             viewHolder.contactImage.setImageBitmap(fromCache);
         } else {
+
             isCancelled.set(false);
             new Thread(() -> {
-                bitmap.set(NetworkAdapter.httpImageRequest(contacts.get(i),
-                        true, imageCache, isCancelled));
+                final Bitmap bitmap = NetworkAdapter.httpImageRequest(contacts.get(i),
+                        true, imageCache, isCancelled);
+                viewHolder.contactImage.setImageBitmap(bitmap);
             }).start();
 
-            viewHolder.contactImage.setImageBitmap(bitmap.get());
+
         }
 
         viewHolder.constraintLayout.setOnClickListener(v -> {
@@ -95,8 +97,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     @Override
     public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
         //Add to catch
-        Contact cachedContact = contacts.get(holder.getAdapterPosition());
-        if (holder.contactImage != null) {
+        int number = holder.getAdapterPosition();
+
+        if (holder.contactImage != null && number >= 0) {
+            Contact cachedContact = contacts.get(holder.getAdapterPosition());
             Bitmap bitmap = ((BitmapDrawable)holder.contactImage.getDrawable()).getBitmap();
             imageCache.setObject(cachedContact.getCacheKey(true), bitmap);
         }
