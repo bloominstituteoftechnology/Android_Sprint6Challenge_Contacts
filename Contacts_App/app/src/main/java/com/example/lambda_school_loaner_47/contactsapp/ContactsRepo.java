@@ -8,7 +8,9 @@ public class ContactsRepo {
 
     public ArrayList<Contacts> getContacts() {
         contacts = new ArrayList<>();
+/*
         contacts = ContactsDao.getContacts();
+*/
         return contacts;
     }
 }

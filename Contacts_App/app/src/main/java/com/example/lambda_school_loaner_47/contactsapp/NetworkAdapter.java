@@ -19,49 +19,54 @@ public class NetworkAdapter {
     }
 
 
-    public static String httpRequest(String stringUrl, NetworkCallback callback) {
-        String            result      = "";
-        InputStream       stream      = null;
-        HttpURLConnection connection  = null;
-        try {
-            URL url    = new URL(stringUrl);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.connect();
-
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                stream = connection.getInputStream();
-                if (stream != null) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-                    StringBuilder builder = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        builder.append(line);
-                    }
-                    result = builder.toString();
-                }
-            }
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            result = e.getMessage();
-        } catch (IOException e) {
-            e.printStackTrace();
-            result = e.getMessage();
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-
-            if (stream != null) {
+    public static void httpRequest(final String stringUrl, final NetworkCallback callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String            result      = "";
+                InputStream       stream      = null;
+                HttpURLConnection connection  = null;
                 try {
-                    stream.close();
+                    URL url    = new URL(stringUrl);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.connect();
+
+                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        stream = connection.getInputStream();
+                        if (stream != null) {
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+                            StringBuilder builder = new StringBuilder();
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                builder.append(line);
+                            }
+                            result = builder.toString();
+                        }
+                    }
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    result = e.getMessage();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    result = e.getMessage();
+                } finally {
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+
+                    if (stream != null) {
+                        try {
+                            stream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    callback.returnResult(true, result);
                 }
             }
-            callback.returnResult(true, result);
-        }
-        return result;
+        }).start();
+
     }
 
     public static Bitmap httpImageRequest(String urlString, AtomicBoolean canceled) {

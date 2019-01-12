@@ -32,22 +32,29 @@ public class ContactsActivity extends AppCompatActivity {
         findViewById(R.id.btnShowContacts).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new Thread(new Runnable() {
+                adapter = new ContactsAdapter(list);
+                view.setHasFixedSize(true);
+                manager = new LinearLayoutManager(context);
+                view.setLayoutManager(manager);
+                view.setAdapter(adapter);
+
+                ContactsDao.getContacts(new ContactsDao.ObjectCallback<ArrayList<Contacts>>() {
                     @Override
-                    public void run() {
-                        list = ContactsDao.getContacts();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter = new ContactsAdapter(list);
-                                view.setHasFixedSize(true);
-                                manager = new LinearLayoutManager(context);
-                                view.setLayoutManager(manager);
-                                view.setAdapter(adapter);
-                            }
-                        });
+                    public void returnContacts(ArrayList<Contacts> object) {
+                        for (final Contacts contact:object) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    list.add(contact);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+/*
+                            adapter.notifyDataSetChanged();
+*/
+                        }
                     }
-                }).start();
+                });
             }
         });
     }
