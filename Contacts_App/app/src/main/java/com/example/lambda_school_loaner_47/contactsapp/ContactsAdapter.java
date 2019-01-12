@@ -20,7 +20,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
     public static final String CONTACT_ADAPTER = "contact adapter";
     Context context;
     ArrayList<Contacts> list;
-    AtomicBoolean canceled = new AtomicBoolean();
+    AtomicBoolean canceled = new AtomicBoolean(false);
     Bitmap bitmap = null;
 
     public ContactsAdapter(ArrayList<Contacts> list) {
@@ -60,6 +60,12 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
             }
         }).start();
         myViewHolder.pic.setImageBitmap(bitmap);
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(@NonNull MyViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        canceled.compareAndSet(false,true);
     }
 
     @Override
