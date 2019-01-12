@@ -14,7 +14,7 @@ import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NetworkAdapter {
-    public static final int TIMEOUT = 3000;
+    private static final int TIMEOUT = 3000;
 
 
     public interface NetworkCallback {
@@ -25,11 +25,11 @@ public class NetworkAdapter {
         void returnResult(Boolean success, Bitmap bitmap);
     }
 
-    public static void httpGetRequest(final String urlString, final AtomicBoolean canceled, final NetworkCallback callback) {
+    public static void httpGetRequest(final String urlString, final AtomicBoolean httpCancel, final NetworkCallback callback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(canceled.get()) {
+                if(httpCancel.get()) {
                     Log.i("GetRequestCanceled", urlString);
                     return;
                 }
@@ -42,7 +42,7 @@ public class NetworkAdapter {
                     URL url = new URL(urlString);
                     connection = (HttpURLConnection) url.openConnection();
 
-                    if(canceled.get()) {
+                    if(httpCancel.get()) {
                         Log.i("GetRequestCanceled", urlString);
                         throw new IOException();
                     }
@@ -51,7 +51,7 @@ public class NetworkAdapter {
 
                     int responseCode = connection.getResponseCode();
 
-                    if(canceled.get()) {
+                    if(httpCancel.get()) {
                         Log.i("GetRequestCanceled", urlString);
                         throw new IOException();
                     }
@@ -131,7 +131,7 @@ public class NetworkAdapter {
         return resultImage;
     }
 
-    public static void httpImageRequest(final String urlString, final AtomicBoolean canceled, final NetworkImageCallback callback) {
+    public static void httpImageRequest(final String urlString, final AtomicBoolean imageCanceled, final NetworkImageCallback callback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -142,7 +142,7 @@ public class NetworkAdapter {
                 URL url;
 
                 try {
-                    if(canceled.get()) {
+                    if(imageCanceled.get()) {
                         Log.i("GetRequestCanceled", urlString);
                         throw new IOException();
                     }
@@ -155,7 +155,7 @@ public class NetworkAdapter {
                     int responseCode = connection.getResponseCode();
                     if (responseCode == HttpURLConnection.HTTP_OK) {
 
-                        if(canceled.get()) {
+                        if(imageCanceled.get()) {
                             Log.i("GetRequestCanceled", urlString);
                             throw new IOException();
                         }
@@ -180,7 +180,7 @@ public class NetworkAdapter {
                         connection.disconnect();
                     }
                 }
-                if(canceled.get()) {
+                if(imageCanceled.get()) {
                     Log.i("GetRequestCanceled", urlString);
                     success = false;
                 }

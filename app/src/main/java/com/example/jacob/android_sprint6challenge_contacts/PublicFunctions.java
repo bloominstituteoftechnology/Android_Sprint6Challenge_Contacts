@@ -4,7 +4,7 @@ import android.content.Context;
 
 import java.io.File;
 
-public class PublicFunctions {
+class PublicFunctions {
 
     static String getSearchText(String inputString) {
         String outputString = inputString.substring(inputString.indexOf("api/") + 4);
@@ -24,7 +24,7 @@ public class PublicFunctions {
         return file;
     }
 
-    public static void deleteCache(Context context) {
+    static void deleteCache(Context context) {
         try {
             File dir = context.getCacheDir();
             if (dir != null && dir.isDirectory()) {
@@ -33,11 +33,11 @@ public class PublicFunctions {
         } catch (Exception e) {}
     }
 
-    public static boolean deleteDir(File dir) {
+    static boolean deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                boolean success = deleteDir(new File(dir, children[i]));
+            for (String aChildren : children) {
+                boolean success = deleteDir(new File(dir, aChildren));
                 if (!success) {
                     return false;
                 }

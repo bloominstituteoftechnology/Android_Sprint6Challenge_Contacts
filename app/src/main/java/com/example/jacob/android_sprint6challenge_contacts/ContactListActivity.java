@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,7 +80,6 @@ public class ContactListActivity extends AppCompatActivity {
 
         final View recyclerView = findViewById(R.id.contact_list);
         assert recyclerView != null;
-//        setupRecyclerView((RecyclerView) recyclerView);
 
         AtomicBoolean canceled = new AtomicBoolean(false);
         ContactsDao.getContacts(canceled, new ContactsDao.ObjectCallback<ArrayList<Contact>>() {
@@ -91,11 +89,9 @@ public class ContactListActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        listAdapter.notifyDataSetChanged();
                         setupRecyclerView((RecyclerView) recyclerView);
                     }
                 });
-//                Log.i("OutputTest", contacts.toString());
             }
         });
 
@@ -120,7 +116,7 @@ public class ContactListActivity extends AppCompatActivity {
                 Contact contact = (Contact) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(ContactDetailFragment.ARG_ITEM_ID, String.valueOf(contact.id));
+                    arguments.putInt(ContactDetailFragment.ARG_ITEM_ID, contact.id);
                     ContactDetailFragment fragment = new ContactDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -153,33 +149,23 @@ public class ContactListActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
             canceledStatus.set(false);
             final String imageUrl = mValues.get(position).thumbImageUrl;
             File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(imageUrl), context);
             if (file == null) {
-                Bitmap bitmap;
                 holder.mImageView.setVisibility(View.INVISIBLE);
 //                holder.mImageView.setImageResource(R.color.colorPrimaryDark);
                 ContactsDao.ObjectCallback<Boolean> callback = new ContactsDao.ObjectCallback<Boolean>() {
                     @Override
                     public void returnObjects(Boolean object) {
                         if (object) {
-                            File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(imageUrl), context);
-                            Bitmap bitmap = null;
-                            try {
-                                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        notifyItemChanged(holder.getAdapterPosition());
-                                    }
-                                });
-                            } catch (FileNotFoundException e1) {
-                                e1.printStackTrace();
-                            } catch (NullPointerException e) {
-                                e.printStackTrace();
-                            }
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    notifyItemChanged(holder.getAdapterPosition());
+                                }
+                            });
                         }
                     }
                 };
