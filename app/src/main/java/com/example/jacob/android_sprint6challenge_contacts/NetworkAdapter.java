@@ -140,12 +140,13 @@ public class NetworkAdapter {
                 InputStream stream = null;
                 HttpURLConnection connection = null;
                 URL url;
-                if(canceled.get()) {
-                    Log.i("GetRequestCanceled", urlString);
-                    return;
-                }
 
                 try {
+                    if(canceled.get()) {
+                        Log.i("GetRequestCanceled", urlString);
+                        throw new IOException();
+                    }
+
                     url = new URL(urlString);
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setReadTimeout(TIMEOUT);
@@ -156,8 +157,7 @@ public class NetworkAdapter {
 
                         if(canceled.get()) {
                             Log.i("GetRequestCanceled", urlString);
-                            connection.disconnect();
-                            return;
+                            throw new IOException();
                         }
 
                         stream = connection.getInputStream();
@@ -182,7 +182,7 @@ public class NetworkAdapter {
                 }
                 if(canceled.get()) {
                     Log.i("GetRequestCanceled", urlString);
-                    return;
+                    success = false;
                 }
                 callback.returnResult(success, resultImage);
             }

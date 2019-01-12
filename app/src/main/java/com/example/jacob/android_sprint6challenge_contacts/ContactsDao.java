@@ -67,15 +67,15 @@ public class ContactsDao {
 
             @Override
             public void returnResult(Boolean success, Bitmap result) {
-                if (canceled.get()) {
-                    Log.i("GetRequestCanceled", url);
-                    return;
-                }
-
                 File file;
                 String searchText = PublicFunctions.getSearchText(url);
                 FileOutputStream fileOutputStream = null;
                 try {
+                    if (canceled.get() || !success) {
+                        Log.i("GetRequestCanceled", url);
+                        throw new IOException();
+                    }
+
                     file = File.createTempFile(searchText, null, context.getCacheDir());
                     fileOutputStream = new FileOutputStream(file);
                     result.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
@@ -83,6 +83,9 @@ public class ContactsDao {
 
                 } catch (IOException e) {
                     e.printStackTrace();
+                }  catch (NullPointerException e) {
+                    e.printStackTrace();
+
                 } finally {
                     if (fileOutputStream != null) {
                         try {

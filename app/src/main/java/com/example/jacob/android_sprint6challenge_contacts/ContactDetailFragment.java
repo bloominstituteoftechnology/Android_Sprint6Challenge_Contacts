@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -44,13 +46,13 @@ public class ContactDetailFragment extends Fragment {
     }
 
     Context context;
-    AtomicBoolean canceledStatus;
+    AtomicBoolean cancelStatus;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this.getActivity();
-        canceledStatus = new AtomicBoolean();
+        cancelStatus = new AtomicBoolean(false);
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
@@ -68,7 +70,7 @@ public class ContactDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.contact_detail, container, false);
-
+        cancelStatus = new AtomicBoolean(false);
         if (mItem != null) {
             ((TextView) rootView.findViewById(R.id.contact_phone)).setText(mItem.phone);
             ((TextView) rootView.findViewById(R.id.contact_email)).setText(mItem.email);
@@ -78,12 +80,21 @@ public class ContactDetailFragment extends Fragment {
                 ContactsDao.ObjectCallback<Boolean> callback = new ContactsDao.ObjectCallback<Boolean>() {
                     @Override
                     public void returnObjects(Boolean object) {
+
                         if (object) {
                             File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(mItem.largeImageUrl), context);
-                            Bitmap bitmap;
+                            final Bitmap bitmap;
                             try {
                                 bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-                                ((ImageView) rootView.findViewById(R.id.image_large)).setImageBitmap(bitmap);
+                                if (!cancelStatus.get()) {
+
+                                    new Handler(Looper.getMainLooper()).post(new Runnable(){
+                                        @Override
+                                        public void run() {
+                                            ((ImageView) rootView.findViewById(R.id.image_large)).setImageBitmap(bitmap);
+                                        }
+                                    });
+                                }
 
                             } catch (FileNotFoundException e1) {
                                 e1.printStackTrace();
@@ -91,7 +102,7 @@ public class ContactDetailFragment extends Fragment {
                         }
                     }
                 };
-                ContactsDao.getImageFile(mItem.largeImageUrl, context, canceledStatus, callback);
+                ContactsDao.getImageFile(mItem.largeImageUrl, context, cancelStatus, callback);
             } else {
                 Bitmap bitmap;
                 try {
@@ -105,5 +116,11 @@ public class ContactDetailFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        cancelStatus.set(true);
     }
 }

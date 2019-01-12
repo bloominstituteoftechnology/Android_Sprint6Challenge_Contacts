@@ -42,6 +42,14 @@ public class ContactListActivity extends AppCompatActivity {
     static Context context;
     SimpleItemRecyclerViewAdapter listAdapter;
 
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        PublicFunctions.deleteCache(this);
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +99,7 @@ public class ContactListActivity extends AppCompatActivity {
         });
 
     }
+
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         listAdapter = new SimpleItemRecyclerViewAdapter(this, contactList, mTwoPane);
@@ -158,15 +167,17 @@ public class ContactListActivity extends AppCompatActivity {
                             Bitmap bitmap = null;
                             try {
                                 bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        notifyItemChanged(holder.getAdapterPosition());
+                                    }
+                                });
                             } catch (FileNotFoundException e1) {
                                 e1.printStackTrace();
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
                             }
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    notifyItemChanged(holder.getAdapterPosition());
-                                }
-                            });
                         }
                     }
                 };
@@ -191,6 +202,12 @@ public class ContactListActivity extends AppCompatActivity {
         public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
             super.onViewDetachedFromWindow(holder);
             canceledStatus.set(true);
+        }
+
+        @Override
+        public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
+            super.onViewAttachedToWindow(holder);
+            canceledStatus.set(false);
         }
 
         @Override
