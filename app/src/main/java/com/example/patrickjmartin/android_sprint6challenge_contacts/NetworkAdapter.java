@@ -66,19 +66,7 @@ public class NetworkAdapter {
         }).start();
     }
 
-    public static Bitmap httpImageRequest(Contact contact, Boolean isSmall, ContactImageCache imageCache,
-                                          final AtomicBoolean cancelled) {
-
-        String urlString = null;
-        String cacheKey = null;
-
-        if (isSmall) {
-           urlString = contact.getPictureThumb();
-           cacheKey = contact.getTitleName() + contact.getFirstName() + contact.getLastName() + "Large";
-        } else {
-            urlString = contact.getPictureLarge();
-            cacheKey = contact.getTitleName() + contact.getFirstName() + contact.getLastName() + "Thumb";
-        }
+    public static Bitmap httpImageRequest(String urlString, String cacheKey , final AtomicBoolean cancelled) {
 
         if(cancelled.get()) {
             Log.i("NetworkAdapter Class - httpImageRequest has been Cancelled:\n", urlString);
@@ -91,11 +79,19 @@ public class NetworkAdapter {
         try{
             URL url = new URL(urlString);
             connection = (HttpURLConnection) url.openConnection();
+
             if(cancelled.get()) {
                 throw new IOException();
             }
+
             connection.connect();
+
             int responseCode = connection.getResponseCode();
+
+            if(cancelled.get()){
+                Log.i("ImageRequestCanceled", urlString);
+                throw new IOException();
+            }
             if(responseCode == HttpURLConnection.HTTP_OK){
                 stream = connection.getInputStream();
                 if(stream != null){
@@ -119,7 +115,16 @@ public class NetworkAdapter {
             }
         }
 
-//        imageCache.setObject(cacheKey, image);
+
+        ContactImageCache imageCache = ContactImageCache.getINSTANCE();
+
+        imageCache.setObject(cacheKey, image);
+
+
+
+
+
+
         return image;
     }
 

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +25,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         private ConstraintLayout constraintLayout;
         private ImageView contactImage;
         private TextView contactDetails;
-        private ProgressBar progressBar;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -34,7 +33,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             constraintLayout = itemView.findViewById(R.id.parent_view_contacts);
             contactImage = itemView.findViewById(R.id.contact_image);
             contactDetails = itemView.findViewById(R.id.contact_textview);
-            progressBar = itemView.findViewById(R.id.progressBar);
 
         }
 
@@ -45,6 +43,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     private Context context;
     final AtomicBoolean isCancelled = new AtomicBoolean(false);
     private ContactImageCache imageCache = ContactImageCache.getINSTANCE();
+    private Bitmap bitmap;
+
 
     ContactAdapter(Activity activity, ArrayList<Contact> contacts) {
         this.activity = activity;
@@ -64,30 +64,31 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
-
-        String contactTextViewContents = contacts.get(i).getFullName();
+        final Contact c = contacts.get(i);
+        final String key = c.getCacheKey(true);
+        final String url = c.getPictureThumb();
+        String contactTextViewContents = c.getFullName();
         viewHolder.contactDetails.setText(contactTextViewContents);
 
-        //TODO Image will be handled via cache.
-        Bitmap fromCache = (Bitmap) imageCache.getObject(contacts.get(i).getCacheKey(true));
+
+        Bitmap fromCache = (Bitmap) imageCache.getObject(c.getCacheKey(true));
 
         if (fromCache != null) {
             viewHolder.contactImage.setImageBitmap(fromCache);
         } else {
-
             isCancelled.set(false);
-            new Thread(() -> {
-                final Bitmap bitmap = NetworkAdapter.httpImageRequest(contacts.get(i),
-                        true, imageCache, isCancelled);
-                viewHolder.contactImage.setImageBitmap(bitmap);
-            }).start();
+            new Thread(() -> bitmap = NetworkAdapter.httpImageRequest(c.getPictureThumb(),
+                    key, isCancelled)).start();
+
+
+            viewHolder.contactImage.setImageBitmap(bitmap);
 
 
         }
 
         viewHolder.constraintLayout.setOnClickListener(v -> {
             Intent detailsIntent = new Intent(activity, ContactDetails.class);
-            detailsIntent.putExtra("contact", contacts.get(i));
+            detailsIntent.putExtra("contact", c);
             activity.startActivity(detailsIntent);
         });
     }
@@ -97,16 +98,18 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     @Override
     public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
         //Add to catch
-        int number = holder.getAdapterPosition();
+//        int number = holder.getAdapterPosition();
+//
+//        if (holder.contactImage != null && number >= 0) {
+//            Contact cachedContact = contacts.get(holder.getAdapterPosition());
+//            Bitmap bitmap = ((BitmapDrawable)holder.contactImage.getDrawable()).getBitmap();
+//            imageCache.setObject(cachedContact.getCacheKey(true), bitmap);
+//        }
 
-        if (holder.contactImage != null && number >= 0) {
-            Contact cachedContact = contacts.get(holder.getAdapterPosition());
-            Bitmap bitmap = ((BitmapDrawable)holder.contactImage.getDrawable()).getBitmap();
-            imageCache.setObject(cachedContact.getCacheKey(true), bitmap);
-        }
 
+
+        super.onViewDetachedFromWindow(holder);
         isCancelled.set(true);
-
 
 
     }

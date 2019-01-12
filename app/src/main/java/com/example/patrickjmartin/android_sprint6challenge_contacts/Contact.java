@@ -60,7 +60,7 @@ public class Contact implements Serializable {
             e.printStackTrace();
         }
 
-        this.fullName = toCamelCase(titleName + " " + firstName + " " + lastName);
+//        this.fullName = toCamelCase(titleName + " " + firstName + " " + lastName);
 
     }
 
@@ -101,9 +101,9 @@ public class Contact implements Serializable {
 
     public String getCacheKey(boolean isSmall) {
         if (isSmall) {
-            return (titleName + firstName + lastName + "Thumb");
+            return (pictureThumb);
         } else {
-            return (titleName + firstName + lastName + "Large");
+            return (pictureLarge);
         }
     }
 

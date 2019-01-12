@@ -17,6 +17,8 @@ public class MainActivity extends AppCompatActivity {
     private Context context;
     private RecyclerView recyclerView;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }).forEach(this::runOnUiThread);
         });
+
+
 
 
 

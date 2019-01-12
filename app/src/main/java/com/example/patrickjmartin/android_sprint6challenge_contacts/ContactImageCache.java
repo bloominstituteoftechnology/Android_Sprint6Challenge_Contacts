@@ -4,7 +4,9 @@ import android.arch.paging.PagedListAdapter;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
-public class ContactImageCache<T> {
+import java.io.Serializable;
+
+public class ContactImageCache<T> implements Serializable {
 
     private static volatile ContactImageCache INSTANCE;
     private LruCache<String, T> genericCache;
@@ -36,7 +38,9 @@ public class ContactImageCache<T> {
     }
 
     public void setObject(String key, T thing) {
-        if (genericCache.get(key) == null) genericCache.put(key, thing);
+        if (!(key == null || thing == null)) {
+            genericCache.put(key, thing);
+        }
     }
 
     public T getObject(String key) {
