@@ -23,6 +23,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
     ArrayList<Contacts> list;
     AtomicBoolean canceled = new AtomicBoolean(false);
     Bitmap bitmap = null;
+    Cache cache = Cache.getInstance();
 
     public ContactsAdapter(ArrayList<Contacts> list) {
         this.list = list;
@@ -52,9 +53,8 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
             }
         });
 
-        //todo
         String key = contact.getThumbnail();
-        Bitmap bm = (Bitmap) Cache.getInstance().getLru().get(key.substring(36));
+        Bitmap bm = (Bitmap) cache.getImage(key);
         if (bm != null){
             myViewHolder.pic.setImageBitmap(bm);
         }else {

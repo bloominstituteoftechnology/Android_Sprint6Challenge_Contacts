@@ -3,13 +3,15 @@ package com.example.lambda_school_loaner_47.contactsapp;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
-public class Cache<T> {
+import java.io.Serializable;
+
+public class Cache<T> implements Serializable {
 
     private static Cache instance;
-    private LruCache<Object, Object> cacheLru;
+    private LruCache<String, T> cacheLru;
 
     private Cache(){
-        this.cacheLru = new LruCache<Object, Object>(1024);
+        this.cacheLru = new LruCache<>(1024);
 
     }
 
@@ -21,7 +23,20 @@ public class Cache<T> {
         return instance;
     }
 
+    public void addImage(String imageName, T image){
+        if (cacheLru!= null){
+            cacheLru.put(imageName, image);
+        }
+    }
+
+    public T getImage(String imageName){
+        if (imageName != null){
+            return cacheLru.get(imageName);
+        }else {
+        return null;}
+    }
+
     public LruCache getLru(){
-        return cacheLru;
+       return cacheLru;
     }
 }
