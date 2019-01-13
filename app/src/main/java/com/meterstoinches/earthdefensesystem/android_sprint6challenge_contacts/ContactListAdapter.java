@@ -53,7 +53,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
            public void run() {
                bitmap = ContactsApiDao.getImage(data.getImgUrl(), cancelRequest);
            }
-       });
+       }).start();
        holder.contactImg.setImageBitmap(bitmap);
     }
 
