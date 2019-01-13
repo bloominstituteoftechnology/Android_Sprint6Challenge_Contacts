@@ -14,8 +14,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.ViewHolder>{
+    Bitmap bitmap = null;
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView contactName;
         ImageView contactImg;
@@ -32,6 +34,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
     private ArrayList<Contact> dataList;
     private Context context;
     private Activity activity;
+    final AtomicBoolean cancelRequest = new AtomicBoolean(false);
 
     ContactListAdapter(ArrayList<Contact> dataList, Activity activity){
         this.dataList = dataList;
@@ -42,16 +45,18 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
        final Contact data= dataList.get(position);
 
+
        holder.contactName.setText(data.getFirstName()+ " " + data.getLastName());
 
        new Thread(new Runnable() {
            @Override
            public void run() {
-
+               bitmap = ContactsApiDao.getImage(data.getImgUrl(), cancelRequest);
            }
-       })
-       holder.contactImg.setImageBitmap(data.getImgUrl());
+       });
+       holder.contactImg.setImageBitmap(bitmap);
     }
+
 
     @NonNull
     @Override

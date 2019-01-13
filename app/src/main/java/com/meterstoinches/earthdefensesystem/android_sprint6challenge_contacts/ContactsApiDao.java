@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ContactsApiDao {
     public interface ObjectCallback<T> {
@@ -51,7 +52,7 @@ public class ContactsApiDao {
         NetworkAdapter.httpGetRequest("https://randomuser.me/api/?format=json&inc=name,email,phone,picture&results=1000", callback);
     }
 
-    public static Bitmap getImage(String url){
-        return NetworkAdapter.httpImageRequest(url);
+    public static Bitmap getImage(String url, final AtomicBoolean atomicBoolean){
+        return NetworkAdapter.httpImageRequest(url, atomicBoolean);
     }
 }
