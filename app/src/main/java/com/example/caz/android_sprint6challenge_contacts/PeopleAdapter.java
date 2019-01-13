@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,7 +20,6 @@ public class PeopleAdapter extends RecyclerView.Adapter{
 
     private View view;
 
-    List<AtomicBoolean> atomicBooleans;
 
 
     public PeopleAdapter(List<Person> personList, Context context) {
@@ -55,8 +55,17 @@ public class PeopleAdapter extends RecyclerView.Adapter{
 
         ((PersonViewHolder)viewHolder).personText.setText(text);
 
-        // getting image
-        new GetImageFromUrl(((PersonViewHolder) viewHolder).ivPersonThumb).execute(person.getThumbnail());
+        Bitmap image = ImageCache.loadImageFromStorage(person, context);
+
+        if(image == null){
+            // if no image, request
+            new GetImageFromUrl(((PersonViewHolder) viewHolder).ivPersonThumb, person, context).execute(person.getThumbnail());
+        }else{
+            ((PersonViewHolder)viewHolder).ivPersonThumb.setImageBitmap(image); // with image
+        }
+
+//        // getting image
+//        new GetImageFromUrl(((PersonViewHolder) viewHolder).ivPersonThumb).execute(person.getThumbnail());
     }
 
     @Override

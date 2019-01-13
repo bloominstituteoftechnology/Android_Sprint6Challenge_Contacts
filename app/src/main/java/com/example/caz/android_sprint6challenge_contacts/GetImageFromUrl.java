@@ -1,5 +1,6 @@
 package com.example.caz.android_sprint6challenge_contacts;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -12,8 +13,13 @@ import java.net.URL;
 public class GetImageFromUrl extends AsyncTask<String, Void, Bitmap> {
 
     private ImageView imageView;
-    public GetImageFromUrl(ImageView imageView){
+    private Person person;
+    private Context context;
+
+    public GetImageFromUrl(ImageView imageView, Person person, Context context) {
         this.imageView = imageView;
+        this.person = person;
+        this.context = context;
     }
 
     @Override
@@ -41,6 +47,8 @@ public class GetImageFromUrl extends AsyncTask<String, Void, Bitmap> {
 
 
         this.imageView.setImageBitmap(bitmap);
-
+        String[] parts = person.getThumbnail().split("/");
+        String fileName = parts[parts.length-1];
+        ImageCache.saveToInternalStorage(fileName, bitmap, context);
     }
 }
