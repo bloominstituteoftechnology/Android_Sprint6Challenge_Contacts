@@ -11,12 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
 
@@ -65,19 +62,19 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
         final Contact c = contacts.get(i);
-        final String key = c.getCacheKey(true);
-        final String url = c.getPictureThumb();
+        String key = c.getCacheKey();
+        String url = c.getPictureThumb();
         String contactTextViewContents = c.getFullName();
         viewHolder.contactDetails.setText(contactTextViewContents);
 
 
-        Bitmap fromCache = (Bitmap) imageCache.getObject(c.getCacheKey(true));
+        Bitmap fromCache = (Bitmap) imageCache.getObject(key);
 
         if (fromCache != null) {
             viewHolder.contactImage.setImageBitmap(fromCache);
         } else {
             isCancelled.set(false);
-            new Thread(() -> bitmap = NetworkAdapter.httpImageRequest(c.getPictureThumb(),
+            new Thread(() -> bitmap = NetworkAdapter.httpImageRequest(url,
                     key, isCancelled)).start();
 
 
@@ -97,19 +94,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
     @Override
     public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
-        //Add to catch
-//        int number = holder.getAdapterPosition();
-//
-//        if (holder.contactImage != null && number >= 0) {
-//            Contact cachedContact = contacts.get(holder.getAdapterPosition());
-//            Bitmap bitmap = ((BitmapDrawable)holder.contactImage.getDrawable()).getBitmap();
-//            imageCache.setObject(cachedContact.getCacheKey(true), bitmap);
-//        }
-
-
-
-        super.onViewDetachedFromWindow(holder);
         isCancelled.set(true);
+        bitmap = null;
+        super.onViewDetachedFromWindow(holder);
 
 
     }

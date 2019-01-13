@@ -7,7 +7,8 @@ import java.io.Serializable;
 
 public class Contact implements Serializable {
 
-     private String titleName, firstName, lastName, email, phoneNumber, pictureLarge, pictureThumb, fullName;
+     private String titleName, firstName, lastName, email, phoneNumber,
+             pictureLarge, pictureThumb, fullName, cacheKey;
 
     public Contact(String titleName, String firstName, String lastName, String email, String phoneNumber, String pictureLarge, String pictureThumb) {
         this.titleName = titleName;
@@ -59,9 +60,8 @@ public class Contact implements Serializable {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-//        this.fullName = toCamelCase(titleName + " " + firstName + " " + lastName);
-
+        
+        cacheKey = pictureThumb.replaceFirst("^https://randomuser.me/api/portraits/", "");
     }
 
     public String getTitleName() {
@@ -74,6 +74,10 @@ public class Contact implements Serializable {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public String getCacheKey() {
+        return cacheKey;
     }
 
     public String getFullName() {
@@ -98,15 +102,7 @@ public class Contact implements Serializable {
     public String getPictureThumb() {
         return pictureThumb;
     }
-
-    public String getCacheKey(boolean isSmall) {
-        if (isSmall) {
-            return (pictureThumb.replaceFirst("^https://randomuser.me/api/portraits/", ""));
-        }
-
-        return null;
-    }
-
+    
     public static String toCamelCase(String initString) {
         String newString = "";
         if (initString == null || initString == "" ) {

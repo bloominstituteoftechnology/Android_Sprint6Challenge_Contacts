@@ -1,6 +1,4 @@
 package com.example.patrickjmartin.android_sprint6challenge_contacts;
-
-import android.arch.paging.PagedListAdapter;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
@@ -17,7 +15,7 @@ public class ContactImageCache<T> implements Serializable {
             throw new RuntimeException("Use getINSTANCE()");
         } else {
             final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-            final int cacheSize = maxMemory / 6;
+            final int cacheSize = maxMemory / 5;
             genericCache = new LruCache<String, T>(cacheSize) {
                 protected int sizeOf(String key, Bitmap bitmap) {
                     return bitmap.getByteCount() / 1024;

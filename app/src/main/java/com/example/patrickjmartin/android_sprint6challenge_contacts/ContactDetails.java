@@ -32,7 +32,7 @@ public class ContactDetails extends AppCompatActivity {
 
         new Thread(() -> {
             bitmap = NetworkAdapter.httpImageRequest(selectedContact.getPictureLarge(),
-                    selectedContact.getCacheKey(false), isCancelled);
+                    selectedContact.getCacheKey(), isCancelled);
             runOnUiThread(() -> contactImageView.setImageBitmap(bitmap));
 
         }).start();

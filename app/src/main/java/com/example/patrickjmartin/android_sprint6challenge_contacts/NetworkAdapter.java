@@ -18,50 +18,47 @@ public class NetworkAdapter {
 
 
     public static void httpGetRequest(final String urlString, final NetworkCallback callback) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String result = "";
-                boolean success = false;
-                HttpURLConnection connection = null;
-                InputStream stream = null;
-                try {
-                    URL url = new URL(urlString);
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.connect();
-                    int responseCode = connection.getResponseCode();
-                    if(responseCode == HttpURLConnection.HTTP_OK) {
-                        stream = connection.getInputStream();
-                        if(stream != null) {
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-                            StringBuilder builder = new StringBuilder();
-                            String line = reader.readLine();
-                            while(line != null){
-                                builder.append(line);
-                                line = reader.readLine();
-                            }
-                            result = builder.toString();
-                            success = true;
-                        }
-                    } else {
-                        result = String.valueOf(responseCode);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if(connection != null) {
-                        connection.disconnect();
-                    }
-
+        new Thread(() -> {
+            String result = "";
+            boolean success = false;
+            HttpURLConnection connection = null;
+            InputStream stream = null;
+            try {
+                URL url = new URL(urlString);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+                int responseCode = connection.getResponseCode();
+                if(responseCode == HttpURLConnection.HTTP_OK) {
+                    stream = connection.getInputStream();
                     if(stream != null) {
-                        try {
-                            stream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+                        StringBuilder builder = new StringBuilder();
+                        String line = reader.readLine();
+                        while(line != null){
+                            builder.append(line);
+                            line = reader.readLine();
                         }
+                        result = builder.toString();
+                        success = true;
                     }
-                    callback.returnResult(success, result);
+                } else {
+                    result = String.valueOf(responseCode);
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if(connection != null) {
+                    connection.disconnect();
+                }
+
+                if(stream != null) {
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                callback.returnResult(success, result);
             }
         }).start();
     }
@@ -88,11 +85,13 @@ public class NetworkAdapter {
 
             int responseCode = connection.getResponseCode();
 
-            if(cancelled.get()){
-                Log.i("ImageRequestCanceled", urlString);
-                throw new IOException();
-            }
             if(responseCode == HttpURLConnection.HTTP_OK){
+
+                if(cancelled.get()){
+                    Log.i("ImageRequestCanceled", urlString);
+                    throw new IOException();
+                }
+
                 stream = connection.getInputStream();
                 if(stream != null){
                     image = BitmapFactory.decodeStream(stream);
@@ -117,7 +116,7 @@ public class NetworkAdapter {
 
 
         ContactImageCache imageCache = ContactImageCache.getINSTANCE();
-
+        
         if(urlString.contains("thumb")) {
             imageCache.setObject(cacheKey, image);
         }
