@@ -54,7 +54,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
         });
 
         String key = contact.getThumbnail();
-        Bitmap bm = (Bitmap) cache.getImage(key);
+        Bitmap bm = (Bitmap) cache.getImage(key.substring(36));
         if (bm != null){
             myViewHolder.pic.setImageBitmap(bm);
         }else {

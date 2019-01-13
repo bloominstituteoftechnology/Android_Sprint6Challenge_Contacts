@@ -114,7 +114,7 @@ public class NetworkAdapter {
         /*Cache cache = Cache.getInstance();
         cache.getLru().put(urlString.substring(urlString.lastIndexOf("/") +1), image);
         Log.d("charles", "httpImageRequest: "+ cache.getLru().get(urlString.substring(36)));*/
-        cache.addImage(urlString, image);
+        cache.addImage(urlString.substring(36), image);
         return image;
     }
 }
