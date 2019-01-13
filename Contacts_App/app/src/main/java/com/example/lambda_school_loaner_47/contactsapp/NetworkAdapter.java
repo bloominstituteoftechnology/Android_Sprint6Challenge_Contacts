@@ -108,9 +108,10 @@ public class NetworkAdapter {
                 connection.disconnect();
             }
         }
-        Cache cache = Cache.getInstance();
-        cache.getLru().put(urlString.substring(36), image);
-        Log.d("charles", "httpImageRequest: "+ cache.getLru().get(urlString.substring(36)));
+        //todo
+        /*Cache cache = Cache.getInstance();
+        cache.getLru().put(urlString.substring(urlString.lastIndexOf("/") +1), image);
+        Log.d("charles", "httpImageRequest: "+ cache.getLru().get(urlString.substring(36)));*/
         return image;
     }
 }

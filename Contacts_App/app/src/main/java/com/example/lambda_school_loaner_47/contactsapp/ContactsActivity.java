@@ -24,8 +24,8 @@ public class ContactsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_contacts);
 
         context = this;
-        view = findViewById(R.id.recycleView);
-        list = new ArrayList<>();
+        view    = findViewById(R.id.recycleView);
+        list    = new ArrayList<>();
 
 
 

@@ -20,7 +20,7 @@ class ContactsDao {
     public static void getContacts(final ObjectCallback<ArrayList<Contacts>> objectCallback){
 
         final ArrayList<Contacts> list    = new ArrayList<>();
-        String              url     = BASE_URL;
+        String                    url     = BASE_URL;
 
         NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
             @Override

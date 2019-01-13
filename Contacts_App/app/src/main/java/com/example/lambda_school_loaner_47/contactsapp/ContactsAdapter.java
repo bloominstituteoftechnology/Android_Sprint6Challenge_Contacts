@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyViewHolder> {
 
     public static final String CONTACT_ADAPTER = "contact adapter";
-    public static final String BITMAP_IMAGE = "bitmap_image";
+    public static final String BITMAP_IMAGE    = "bitmap_image";
     Context context;
     ArrayList<Contacts> list;
     AtomicBoolean canceled = new AtomicBoolean(false);
@@ -52,6 +52,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
             }
         });
 
+        //todo
         String key = contact.getThumbnail();
         Bitmap bm = (Bitmap) Cache.getInstance().getLru().get(key.substring(36));
         if (bm != null){
@@ -89,7 +90,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
             parent   = contact.findViewById(R.id.parentLayout);
             fullName = contact.findViewById(R.id.tvName);
-            pic = contact.findViewById(R.id.ivThumbnail);
+            pic      = contact.findViewById(R.id.ivThumbnail);
         }
     }
 }
