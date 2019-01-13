@@ -31,7 +31,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
         }
     }
-    private ArrayList<Contact> dataList;
+    private final ArrayList<Contact> dataList;
     private Context context;
     private Activity activity;
     final AtomicBoolean cancelRequest = new AtomicBoolean(false);

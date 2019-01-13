@@ -11,24 +11,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ContactsApiDao {
     public interface ObjectCallback<T> {
-        void returnContacts(ArrayList<T> object);
+        void returnObjects(T object);
     }
 
-    public static void getAllContacts(final ObjectCallback<Contact> objectCallback) {
+    public static void getAllContacts(final ObjectCallback<ArrayList<Contact>> objectCallback) {
         final ArrayList<Contact> contacts = new ArrayList<>();
         final NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
             @Override
             public void returnResult(Boolean success, String page) {
-                String nextUrl = null;
-                try {
-                    nextUrl = new JSONObject(page).getString("next");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    nextUrl = null;
-                }
-                if (nextUrl != null) {
-                    NetworkAdapter.httpGetRequest(nextUrl, this);
-                }
 
                 try {
                     JSONObject pageJson     = new JSONObject(page);
@@ -42,14 +32,14 @@ public class ContactsApiDao {
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }
-
-                if (nextUrl == null) {
-                    objectCallback.returnContacts(contacts);
+                } finally {
+                    objectCallback.returnObjects(contacts);
                 }
             }
         };
-        NetworkAdapter.httpGetRequest("https://randomuser.me/api/?format=json&inc=name,email,phone,picture&results=1000", callback);
+        NetworkAdapter.httpGetRequest(
+                "https://randomuser.me/api/?format=json&inc=name,email,phone,picture&results=1000",
+                callback);
     }
 
     public static Bitmap getImage(String url, final AtomicBoolean atomicBoolean){
