@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -109,7 +110,8 @@ public class ContactListActivity extends AppCompatActivity {
         private final ContactListActivity mParentActivity;
         private final ArrayList<Contact> mValues;
         private final boolean mTwoPane;
-        private AtomicBoolean canceledStatus;
+        private final ArrayList<AtomicBoolean> canceledStatusList = new ArrayList<>(Collections.nCopies(1000, new AtomicBoolean(false)));
+
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -138,7 +140,6 @@ public class ContactListActivity extends AppCompatActivity {
             mValues = items;
             mParentActivity = parent;
             mTwoPane = twoPane;
-            canceledStatus = new AtomicBoolean(false);
         }
 
         @Override
@@ -150,12 +151,13 @@ public class ContactListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-            canceledStatus.set(false);
+            AtomicBoolean atomicBoolean = canceledStatusList.get(position);
+            atomicBoolean.set(false);
+            canceledStatusList.set(position,atomicBoolean);
             final String imageUrl = mValues.get(position).thumbImageUrl;
             File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(imageUrl), context);
             if (file == null) {
                 holder.mImageView.setVisibility(View.INVISIBLE);
-//                holder.mImageView.setImageResource(R.color.colorPrimaryDark);
                 ContactsDao.ObjectCallback<Boolean> callback = new ContactsDao.ObjectCallback<Boolean>() {
                     @Override
                     public void returnObjects(Boolean object) {
@@ -169,7 +171,7 @@ public class ContactListActivity extends AppCompatActivity {
                         }
                     }
                 };
-                ContactsDao.getImageFile(imageUrl, context, canceledStatus, callback);
+                ContactsDao.getImageFile(imageUrl, context, canceledStatusList.get(position), callback);
             } else {
                 Bitmap bitmap = null;
                 try {
@@ -190,13 +192,9 @@ public class ContactListActivity extends AppCompatActivity {
         @Override
         public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
             super.onViewDetachedFromWindow(holder);
-            canceledStatus.set(true);
-        }
-
-        @Override
-        public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
-            super.onViewAttachedToWindow(holder);
-            canceledStatus.set(false);
+            AtomicBoolean atomicBoolean = canceledStatusList.get(holder.getAdapterPosition());
+            atomicBoolean.set(true);
+            canceledStatusList.set(holder.getAdapterPosition(),atomicBoolean);
         }
 
         @Override

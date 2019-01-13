@@ -95,42 +95,6 @@ public class NetworkAdapter {
         }).start();
     }
 
-    static Bitmap httpImageRequest(String urlString) {
-        Bitmap resultImage = null;
-        InputStream stream = null;
-        HttpURLConnection connection = null;
-
-        URL url;
-        try {
-            url = new URL(urlString);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setReadTimeout(TIMEOUT);
-            connection.setConnectTimeout(TIMEOUT);
-            connection.connect();
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                stream = connection.getInputStream();
-                if (stream != null) {
-                    resultImage = BitmapFactory.decodeStream(stream);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-        return resultImage;
-    }
-
     public static void httpImageRequest(final String urlString, final AtomicBoolean imageCanceled, final NetworkImageCallback callback) {
         new Thread(new Runnable() {
             @Override

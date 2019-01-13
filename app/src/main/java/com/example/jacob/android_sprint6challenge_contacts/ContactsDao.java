@@ -81,11 +81,8 @@ public class ContactsDao {
                     result.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
                     success = true;
 
-                } catch (IOException e) {
+                } catch (IOException | NullPointerException e) {
                     e.printStackTrace();
-                }  catch (NullPointerException e) {
-                    e.printStackTrace();
-
                 } finally {
                     if (fileOutputStream != null) {
                         try {
