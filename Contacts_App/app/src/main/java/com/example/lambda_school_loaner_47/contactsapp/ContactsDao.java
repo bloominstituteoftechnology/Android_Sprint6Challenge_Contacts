@@ -58,11 +58,4 @@ class ContactsDao {
         return NetworkAdapter.httpImageRequest(url, atomicBoolean);
     }
 
-    public void saveBitmapToCache(){
-        // code for bitmap
-    }
-
-    public void getBitmapFromCache(){
-        //code for bitmip
-    }
 }

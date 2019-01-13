@@ -1,8 +1,9 @@
 package com.example.lambda_school_loaner_47.contactsapp;
 
+import android.graphics.Bitmap;
 import android.util.LruCache;
 
-public class Cache {
+public class Cache<T> {
 
     private static Cache instance;
     private LruCache<Object, Object> cacheLru;

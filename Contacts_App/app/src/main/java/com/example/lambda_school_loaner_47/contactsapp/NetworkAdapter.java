@@ -107,6 +107,8 @@ public class NetworkAdapter {
                 connection.disconnect();
             }
         }
+        Cache cache = Cache.getInstance();
+        cache.getLru().put(urlString.substring(urlString.lastIndexOf("/") + 1), image);
         return image;
     }
 }

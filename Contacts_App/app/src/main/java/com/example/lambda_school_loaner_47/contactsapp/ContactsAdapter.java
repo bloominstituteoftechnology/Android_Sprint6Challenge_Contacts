@@ -59,7 +59,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                 bitmap = ContactsDao.getImage(contact.getThumbnail(),canceled);
 
                 //todo find out why its crashing
-               // Cache.getInstance().getLru().put("bitmapKey", bitmap);
+
             }
         }).start();
         myViewHolder.pic.setImageBitmap(bitmap);
