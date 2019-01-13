@@ -39,7 +39,7 @@ public class DetailsActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                bitmap = ContactsDao.getImage(contacts.getThumbnail(),canceled);
+                bitmap = ContactsDao.getImage(contacts.getLargeImage(),canceled);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
