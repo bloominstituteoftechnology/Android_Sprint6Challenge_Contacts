@@ -1,6 +1,7 @@
 package com.example.caz.android_sprint6challenge_contacts;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,12 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class PeopleAdapter extends RecyclerView.Adapter{
     List<Person> personList;
     private Context context;
 
     private View view;
+
+    List<AtomicBoolean> atomicBooleans;
 
 
     public PeopleAdapter(List<Person> personList, Context context) {
@@ -50,8 +54,18 @@ public class PeopleAdapter extends RecyclerView.Adapter{
         String text = person.getTitle() + " " + person.getFirst() + " " + person.getLast();
 
         ((PersonViewHolder)viewHolder).personText.setText(text);
+
+        // getting image
+        new GetImageFromUrl(((PersonViewHolder) viewHolder).ivPersonThumb).execute(person.getThumbnail());
     }
 
+    @Override
+    public void onViewDetachedFromWindow(@NonNull RecyclerView.ViewHolder holder) {
+
+
+
+        super.onViewDetachedFromWindow(holder);
+    }
 
     @Override
     public int getItemCount() {
