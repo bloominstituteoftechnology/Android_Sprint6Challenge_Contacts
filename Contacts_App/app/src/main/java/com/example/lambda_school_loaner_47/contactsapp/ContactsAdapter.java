@@ -52,18 +52,20 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
             }
         });
 
-        //todo setup contact dao
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                bitmap = ContactsDao.getImage(contact.getThumbnail(),canceled);
-
-                //todo find out why its crashing
-
-            }
-        }).start();
-        myViewHolder.pic.setImageBitmap(bitmap);
-
+        String key = contact.getThumbnail();
+        Bitmap bm = (Bitmap) Cache.getInstance().getLru().get(key.substring(36));
+        if (bm != null){
+            myViewHolder.pic.setImageBitmap(bm);
+        }else {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    bitmap = ContactsDao.getImage(contact.getThumbnail(),canceled);
+                    canceled.lazySet(false);
+                }
+            }).start();
+            myViewHolder.pic.setImageBitmap(bitmap);
+        }
     }
 
     @Override

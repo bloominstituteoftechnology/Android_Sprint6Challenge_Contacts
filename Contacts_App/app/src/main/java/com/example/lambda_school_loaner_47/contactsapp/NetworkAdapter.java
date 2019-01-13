@@ -2,6 +2,7 @@ package com.example.lambda_school_loaner_47.contactsapp;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -108,7 +109,8 @@ public class NetworkAdapter {
             }
         }
         Cache cache = Cache.getInstance();
-        cache.getLru().put(urlString.substring(urlString.lastIndexOf("/") + 1), image);
+        cache.getLru().put(urlString.substring(36), image);
+        Log.d("charles", "httpImageRequest: "+ cache.getLru().get(urlString.substring(36)));
         return image;
     }
 }
