@@ -165,7 +165,18 @@ public class ContactListActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    notifyItemChanged(holder.getAdapterPosition());
+//                                    notifyItemChanged(holder.getAdapterPosition());
+                                    File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(imageUrl), context);
+                                    Bitmap bitmap = null;
+                                    try {
+                                        bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                                        holder.mImageView.setImageBitmap(bitmap);
+                                        holder.mImageView.setVisibility(View.VISIBLE);
+                                    } catch (FileNotFoundException e1) {
+                                        e1.printStackTrace();
+                                    }
+
+
                                 }
                             });
                         }
