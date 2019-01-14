@@ -45,7 +45,6 @@ public class FetchPeopleTask extends AsyncTask <Void, String, List<Person>>{
             e.printStackTrace();
         }
 
-        Log.d("Caz", people.toString());
         return people;
     }
 

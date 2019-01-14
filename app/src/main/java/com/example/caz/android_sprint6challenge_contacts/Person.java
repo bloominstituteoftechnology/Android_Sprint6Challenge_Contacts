@@ -3,7 +3,9 @@ package com.example.caz.android_sprint6challenge_contacts;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Person {
+import java.io.Serializable;
+
+public class Person implements Serializable {
     private String title;
     private String first;
     private String last;

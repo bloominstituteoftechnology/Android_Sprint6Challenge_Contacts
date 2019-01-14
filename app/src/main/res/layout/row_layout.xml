@@ -10,8 +10,8 @@
         android:id="@+id/ivPersonThumb"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_weight="1"
-        tools:srcCompat="@tools:sample/avatars[2]" />
+        android:background="@drawable/placeholder"
+        android:layout_weight="1" />
 
     <TextView
         android:id="@+id/tvPersonText"

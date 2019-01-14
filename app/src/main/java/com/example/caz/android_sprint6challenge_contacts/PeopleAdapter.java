@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -50,7 +51,7 @@ public class PeopleAdapter extends RecyclerView.Adapter{
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
 
-        Person person = this.personList.get(i);
+        final Person person = this.personList.get(i);
         String text = person.getTitle() + " " + person.getFirst() + " " + person.getLast();
 
         ((PersonViewHolder)viewHolder).personText.setText(text);
@@ -64,15 +65,24 @@ public class PeopleAdapter extends RecyclerView.Adapter{
             ((PersonViewHolder)viewHolder).ivPersonThumb.setImageBitmap(image); // with image
         }
 
-//        // getting image
-//        new GetImageFromUrl(((PersonViewHolder) viewHolder).ivPersonThumb).execute(person.getThumbnail());
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, PersonDetailActivity.class);
+                i.putExtra("selectedPerson", person);
+                context.startActivity(i);
+            }
+        });
+    }
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull RecyclerView.ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
     }
 
     @Override
     public void onViewDetachedFromWindow(@NonNull RecyclerView.ViewHolder holder) {
-
-
-
         super.onViewDetachedFromWindow(holder);
     }
 
@@ -81,47 +91,3 @@ public class PeopleAdapter extends RecyclerView.Adapter{
         return this.personList.size();
     }
 }
-
-//public class PeopleAdapter extends RecyclerView.Adapter<PeopleAdapter.PersonViewHolder> {
-//    List<ListItem> listItems;
-//    private Context context;
-//
-//
-//    public PeopleAdapter(List<ListItem> listItems, Context context) {
-//        this.listItems = listItems;
-//        this.context = context;
-//    }
-//
-//    public class PersonViewHolder extends RecyclerView.PersonViewHolder {
-//        public TextView personText;
-//
-//
-//        public PersonViewHolder(View v) {
-//            super(v);
-//
-//            personText = itemView.findViewById(R.id.firstLine);
-//        }
-//    }
-//
-//    @Override
-//    public PeopleAdapter.PersonViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//
-//        LayoutInflater inflater = LayoutInflater.from(context);
-//        View v = inflater.inflate(R.layout.row_layout, null);
-//        PersonViewHolder vh = new PersonViewHolder(v);
-//        return vh;
-//    }
-//
-//    @Override
-//    public void onBindViewHolder(PersonViewHolder holder, final int position) {
-//
-//        ListItem listItemBind = listItems.get(position);
-//        holder.personText.setText(listItemBind.getPersonName());
-//    }
-//
-//    @Override
-//    public int getItemCount() {
-//        return listItems.size();
-//    }
-//
-//}
