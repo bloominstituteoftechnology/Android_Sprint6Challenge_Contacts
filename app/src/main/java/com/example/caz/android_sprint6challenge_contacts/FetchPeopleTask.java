@@ -12,6 +12,7 @@ import java.util.List;
 
 public class FetchPeopleTask extends AsyncTask <Void, String, List<Person>>{
 
+    List<Person> people = new ArrayList<>();
     PeopleResponse peopleResponse;
     public FetchPeopleTask(PeopleResponse peopleResponse){
 
@@ -27,25 +28,35 @@ public class FetchPeopleTask extends AsyncTask <Void, String, List<Person>>{
     protected List<Person> doInBackground(Void... voids) {
 
         String url = "https://randomuser.me/api/?format=json&inc=name,email,phone,picture&results=1000";
-        String response = NetworkAdapter.httpRequest(url);
-        Log.d("Response", response);
-        // Parse the response and create list of people
-        List<Person> people = new ArrayList<>();
+//        String response = NetworkAdapter.httpRequest(url);
+
+        NetworkAdapter.httpRequest(url, new NetworkAdapter.NetworkCallback() {
+            @Override
+            public void returnResult(Boolean success, String page) {
+                //------------------------
+
+                //        Log.d("Response", response);
+                // Parse the response and create list of people
 
 
-        try {
-            JSONArray result = new JSONObject(response).getJSONArray("results");
+                try {
+                    JSONArray result = new JSONObject(page).getJSONArray("results");
 
-            for(int i=0; i<result.length(); ++i){
-                JSONObject personObject = result.getJSONObject(i);
-                Person person = new Person(personObject);
-                people.add(person);
+                    for(int i=0; i<result.length(); ++i){
+                        JSONObject personObject = result.getJSONObject(i);
+                        Person person = new Person(personObject);
+                        people.add(person);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                //------------------------
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        });
 
         return people;
+
     }
 
     @Override

@@ -52,6 +52,7 @@ public class ImageCache {
         }
         catch (FileNotFoundException e)
         {
+            Log.d("CACHE", "File not in cache, request will be made!");
         }
         return null;
     }
