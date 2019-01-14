@@ -153,44 +153,36 @@ public class ContactListActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
             AtomicBoolean atomicBoolean = canceledStatusList.get(position);
             atomicBoolean.set(false);
-            canceledStatusList.set(position,atomicBoolean);
+            canceledStatusList.set(position, atomicBoolean);
             final String imageUrl = mValues.get(position).thumbImageUrl;
             File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(imageUrl), context);
             if (file == null) {
                 holder.mImageView.setVisibility(View.INVISIBLE);
-                ContactsDao.ObjectCallback<Boolean> callback = new ContactsDao.ObjectCallback<Boolean>() {
+                ContactsDao.ObjectCallback<Bitmap> callback = new ContactsDao.ObjectCallback<Bitmap>() {
                     @Override
-                    public void returnObjects(Boolean object) {
-                        if (object) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
+                    public void returnObjects(final Bitmap bitmap) {
+                        if (bitmap != null) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
 //                                    notifyItemChanged(holder.getAdapterPosition());
-                                    File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(imageUrl), context);
-                                    Bitmap bitmap = null;
-                                    try {
-                                        bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-                                        holder.mImageView.setImageBitmap(bitmap);
-                                        holder.mImageView.setVisibility(View.VISIBLE);
-                                    } catch (FileNotFoundException e1) {
-                                        e1.printStackTrace();
-                                    }
+                                            holder.mImageView.setImageBitmap(bitmap);
+                                            holder.mImageView.setVisibility(View.VISIBLE);
+                                        }
+                                    });
 
-
-                                }
-                            });
                         }
                     }
                 };
                 ContactsDao.getImageFile(imageUrl, context, canceledStatusList.get(position), callback);
             } else {
-                Bitmap bitmap = null;
+                Bitmap bitmapFromFile = null;
                 try {
-                    bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                    bitmapFromFile = BitmapFactory.decodeStream(new FileInputStream(file));
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();
                 }
-                holder.mImageView.setImageBitmap(bitmap);
+                holder.mImageView.setImageBitmap(bitmapFromFile);
                 holder.mImageView.setVisibility(View.VISIBLE);
             }
 
@@ -205,7 +197,7 @@ public class ContactListActivity extends AppCompatActivity {
             super.onViewDetachedFromWindow(holder);
             AtomicBoolean atomicBoolean = canceledStatusList.get(holder.getAdapterPosition());
             atomicBoolean.set(true);
-            canceledStatusList.set(holder.getAdapterPosition(),atomicBoolean);
+            canceledStatusList.set(holder.getAdapterPosition(), atomicBoolean);
         }
 
         @Override

@@ -61,17 +61,17 @@ public class ContactsDao {
     }
 
 
-    static void getImageFile(final String url, final Context context, final AtomicBoolean canceled, final ObjectCallback<Boolean> objectCallback) {
+    static void getImageFile(final String url, final Context context, final AtomicBoolean canceled, final ObjectCallback<Bitmap> objectCallback) {
 
         final NetworkAdapter.NetworkImageCallback callback = new NetworkAdapter.NetworkImageCallback() {
 
             @Override
-            public void returnResult(Boolean success, Bitmap result) {
+            public void returnResult(Bitmap result) {
                 File file;
                 String searchText = PublicFunctions.getSearchText(url);
                 FileOutputStream fileOutputStream = null;
                 try {
-                    if (canceled.get() || !success) {
+                    if (canceled.get()) {
                         Log.i("GetRequestCanceled", url);
                         throw new IOException();
                     }
@@ -79,7 +79,6 @@ public class ContactsDao {
                     file = File.createTempFile(searchText, null, context.getCacheDir());
                     fileOutputStream = new FileOutputStream(file);
                     result.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-                    success = true;
 
                 } catch (IOException | NullPointerException e) {
                     e.printStackTrace();
@@ -92,7 +91,7 @@ public class ContactsDao {
                         }
                     }
                 }
-                objectCallback.returnObjects(success);
+                objectCallback.returnObjects(result);
 
             }
         };

@@ -22,7 +22,7 @@ public class NetworkAdapter {
     }
 
     public interface NetworkImageCallback {
-        void returnResult(Boolean success, Bitmap bitmap);
+        void returnResult(Bitmap bitmap);
     }
 
     public static void httpGetRequest(final String urlString, final AtomicBoolean httpCancel, final NetworkCallback callback) {
@@ -148,7 +148,7 @@ public class NetworkAdapter {
                     Log.i("GetRequestCanceled", urlString);
                     success = false;
                 }
-                callback.returnResult(success, resultImage);
+                callback.returnResult(resultImage);
             }
         }).start();
     }

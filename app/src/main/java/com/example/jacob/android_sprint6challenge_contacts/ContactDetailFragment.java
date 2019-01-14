@@ -77,28 +77,18 @@ public class ContactDetailFragment extends Fragment {
 
             File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(mItem.largeImageUrl), context);
             if (file == null) {
-                ContactsDao.ObjectCallback<Boolean> callback = new ContactsDao.ObjectCallback<Boolean>() {
+                ContactsDao.ObjectCallback<Bitmap> callback = new ContactsDao.ObjectCallback<Bitmap>() {
                     @Override
-                    public void returnObjects(Boolean object) {
-
-                        if (object) {
-                            File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(mItem.largeImageUrl), context);
-                            final Bitmap bitmap;
-                            try {
-                                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                    public void returnObjects(final Bitmap bitmap) {
+                        if (bitmap != null) {
                                 if (!cancelStatus.get()) {
-
-                                    new Handler(Looper.getMainLooper()).post(new Runnable(){
+                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
                                         @Override
                                         public void run() {
                                             ((ImageView) rootView.findViewById(R.id.image_large)).setImageBitmap(bitmap);
                                         }
                                     });
                                 }
-
-                            } catch (FileNotFoundException e1) {
-                                e1.printStackTrace();
-                            }
                         }
                     }
                 };
