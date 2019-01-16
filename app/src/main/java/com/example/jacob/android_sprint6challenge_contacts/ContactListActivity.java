@@ -6,11 +6,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -110,7 +109,7 @@ public class ContactListActivity extends AppCompatActivity {
         private final ContactListActivity mParentActivity;
         private final ArrayList<Contact> mValues;
         private final boolean mTwoPane;
-        private final ArrayList<AtomicBoolean> canceledStatusList = new ArrayList<>(Collections.nCopies(1000, new AtomicBoolean(false)));
+
 
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
@@ -146,14 +145,13 @@ public class ContactListActivity extends AppCompatActivity {
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.contact_list_content, parent, false);
+            boolean test = false;
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-            AtomicBoolean atomicBoolean = canceledStatusList.get(position);
-            atomicBoolean.set(false);
-            canceledStatusList.set(position, atomicBoolean);
+            holder.status.set(false);
             final String imageUrl = mValues.get(position).thumbImageUrl;
             File file = PublicFunctions.getFileFromCache(PublicFunctions.getSearchText(imageUrl), context);
             if (file == null) {
@@ -162,19 +160,19 @@ public class ContactListActivity extends AppCompatActivity {
                     @Override
                     public void returnObjects(final Bitmap bitmap) {
                         if (bitmap != null) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
 //                                    notifyItemChanged(holder.getAdapterPosition());
-                                            holder.mImageView.setImageBitmap(bitmap);
-                                            holder.mImageView.setVisibility(View.VISIBLE);
-                                        }
-                                    });
+                                    holder.mImageView.setImageBitmap(bitmap);
+                                    holder.mImageView.setVisibility(View.VISIBLE);
+                                }
+                            });
 
                         }
                     }
                 };
-                ContactsDao.getImageFile(imageUrl, context, canceledStatusList.get(position), callback);
+                ContactsDao.getImageFile(imageUrl, context, holder.status, callback);
             } else {
                 Bitmap bitmapFromFile = null;
                 try {
@@ -195,9 +193,7 @@ public class ContactListActivity extends AppCompatActivity {
         @Override
         public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
             super.onViewDetachedFromWindow(holder);
-            AtomicBoolean atomicBoolean = canceledStatusList.get(holder.getAdapterPosition());
-            atomicBoolean.set(true);
-            canceledStatusList.set(holder.getAdapterPosition(), atomicBoolean);
+            holder.status.set(true);
         }
 
         @Override
@@ -213,12 +209,14 @@ public class ContactListActivity extends AppCompatActivity {
             final TextView mIdView;
             final TextView mNameView;
             final ImageView mImageView;
+            final AtomicBoolean status;
 
             ViewHolder(View view) {
                 super(view);
                 mIdView = view.findViewById(R.id.id_text);
                 mNameView = view.findViewById(R.id.name);
                 mImageView = view.findViewById(R.id.image);
+                status = new AtomicBoolean(false);
             }
         }
     }
