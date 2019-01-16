@@ -1,7 +1,7 @@
 # Android_Sprint6Challenge_Contacts
 
 ### Instructions
-
+test
 **Please read this entire README to make sure you understand what is expected of you before you begin.**
 
 This sprint challenge is designed to ensure that you are competent with the concepts taught throughout Sprint 7, Intermediate Java.
